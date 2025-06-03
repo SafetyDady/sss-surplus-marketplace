@@ -8,10 +8,11 @@ import { getCategoryTree } from "../../services/categoryService"
 
 /*
 File: /components/vendor/ProductForm.tsx
-Version: 1.3 | 2025-06-03
+Version: 1.4 | 2025-06-03
 Note:
-- Minimal touch: เพิ่ม ref (resetForm) ให้ parent reset ได้
-- เพิ่ม prop isSubmitting เพื่อป้องกัน double submit
+- แก้ setValue tags: ไม่ใช้ any (เปลี่ยนเป็น string[])
+- ปรับ logic preview รูป img ได้มาตรฐาน (ถ้าต้องการใช้ <Image /> เพิ่มเติม แจ้งได้)
+- ยังมี ref resetForm & isSubmitting
 */
 
 const productSchema = z.object({
@@ -56,7 +57,6 @@ interface CategoryNode {
   children?: CategoryNode[]
 }
 
-// เพิ่ม prop isSubmitting (default = false)
 type ProductFormProps = {
   onSubmit?: (data: ProductFormType) => void
   onChange?: (data: ProductFormType) => void
@@ -118,7 +118,7 @@ const ProductForm = forwardRef(function ProductForm(
       .split(",")
       .map((tag) => tag.trim())
       .filter((tag) => tag.length > 0)
-    setValue("tags", tagsArr as any)
+    setValue("tags", tagsArr) // **แก้: ไม่ใช้ any**
   }
 
   function handleMainImageChange(e: React.ChangeEvent<HTMLInputElement>) {

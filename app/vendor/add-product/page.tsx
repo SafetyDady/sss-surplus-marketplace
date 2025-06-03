@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from "react"
-import ProductForm from "../../../components/vendor/ProductForm"
+import ProductForm, { type ProductFormType } from "../../../components/vendor/ProductForm"
 import ProductPreviewCard from "../../../components/vendor/ProductPreviewCard"
 import ProductGridCard from "../../../components/vendor/ProductGridCard"
 import { db, storage } from "../../../firebase/firebase"
@@ -10,8 +10,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 /*
 File: /app/vendor/add-product/page.tsx
-Version: 2.2 | 2025-06-03
-note: แก้ปัญหา Firestore ไม่รับ field undefined (salePrice, อื่น ๆ), reset form หลังเพิ่มสินค้า
+Version: 2.3 | 2025-06-03
+Note: ปรับ type any → ProductFormType, ref type, เพิ่ม accessibility Toast
 */
 
 function Toast({ message, show, onClose }: { message: string, show: boolean, onClose: () => void }) {
@@ -21,29 +21,29 @@ function Toast({ message, show, onClose }: { message: string, show: boolean, onC
         ${show ? "bg-green-600 opacity-100" : "opacity-0 pointer-events-none"}`}
       style={{ minWidth: 260 }}
       role="alert"
-      aria-live="polite"
+      aria-live="assertive"
     >
       {message}
-      <button className="ml-6 text-white/80" onClick={onClose}>ปิด</button>
+      <button className="ml-6 text-white/80" tabIndex={0} onClick={onClose}>ปิด</button>
     </div>
   )
 }
 
 export default function AddProductPage() {
-  const [productData, setProductData] = useState<any>(null)
+  const [productData, setProductData] = useState<ProductFormType | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [toastMsg, setToastMsg] = useState<string>("")
   const [showToast, setShowToast] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const formRef = useRef<any>(null)
+  const formRef = useRef<{ resetForm: () => void } | null>(null)
 
   // real-time preview
-  const handleFormChange = (data: any) => {
+  const handleFormChange = (data: ProductFormType) => {
     setProductData(data)
   }
 
   // add product จริง
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = async (data: ProductFormType) => {
     setIsSubmitting(true)
     try {
       // 1. สร้าง doc ใหม่ใน Firestore เพื่อได้ productId
