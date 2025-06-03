@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# sss-surplus-marketplace (Backup Branch)
 
-## Getting Started
+## 🗂 Structure (โครงสร้างไฟล์/โฟลเดอร์หลัก)
 
-First, run the development server:
+├── public/ # Static assets (เช่น รูป, favicon)
+├── src/
+│ └── app/ # Next.js App directory (หน้าต่าง ๆ)
+│ └── components/ # Reusable React components (Form, Preview, etc.)
+│ └── services/ # Logic ฝั่ง client (เช่น Firestore, Auth, Storage)
+│ └── utils/ # Utility functions/helper
+│ └── firebase/ # Firebase SDK config (client-side)
+├── .gitignore # ไฟล์ที่กันไม่ให้ขึ้น git (node_modules, .env, etc.)
+├── package.json # Dependency และ scripts
+├── next.config.ts # Next.js config
+├── tsconfig.json # TypeScript config
+├── README.md # คู่มือโปรเจกต์
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+yaml
+Copy
+Edit
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎯 Purpose & Goal (เป้าหมายของโปรเจกต์นี้)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- พัฒนา **Marketplace สำหรับบริหารจัดการ/ซื้อขายสินค้าคงเหลือ** (Surplus Marketplace)
+- รองรับระบบสมาชิก (Auth), การเพิ่ม/แก้ไขสินค้า, จัดการหมวดหมู่, อัปโหลดรูปภาพ, ระบบ Vendor/Admin
+- Stack ที่ใช้:
+  - **Next.js 14+** (React, App Router, SSR/CSR)
+  - **TypeScript**
+  - **TailwindCSS** (UI responsive)
+  - **Firebase** (Auth, Firestore, Storage)
+  - **Vercel** (deploy production)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🟢 Current Status (สถานะล่าสุด ณ วันที่ backup นี้)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [x] โครงสร้างไฟล์และ source code ครบสมบูรณ์
+- [x] เชื่อมต่อ Firebase (Auth, Firestore, Storage) และอัปโหลดรูปได้จริง
+- [x] Product Form + Preview/Preview Grid ใช้งานได้จริง
+- [x] ระบบเพิ่มหมวดหมู่, เพิ่มสินค้า, อัปโหลดรูป → **บันทึกข้อมูลครบทั้ง Storage และ Firestore**
+- [x] ระบบ Toast, UX ดี (แจ้งเตือนสำเร็จ/ล้มเหลว)
+- [x] **ไม่มี .env, node_modules, .next ใน backup นี้** (ปลอดภัยต่อการ share)
+- [x] Backup ขึ้น GitHub branch: `backup-before-deploy`
+- [ ] ยังไม่ได้ deploy production ใน branch นี้
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠 Restore/ใช้งาน branch นี้
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clone หรือ checkout branch นี้:
+    ```sh
+    git checkout backup-before-deploy
+    ```
+2. ติดตั้ง dependency:
+    ```sh
+    npm install
+    ```
+3. เตรียมไฟล์ `.env.local` จาก Production/Dev ที่ backup ไว้  
+   (อย่า push .env ขึ้น repo)
+4. รัน dev server:
+    ```sh
+    npm run dev
+    ```
+5. ทดสอบระบบ/แก้ไขฟีเจอร์เพิ่มได้ทันที
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## ⚠️ ข้อควรระวัง
+
+- **ห้าม push .env, node_modules, .next ขึ้น repo**
+- หาก merge README นี้กลับ main ให้ resolve conflict (อาจเนื้อหาไม่ตรงกัน)
+- ใช้ branch นี้สำหรับ rollback หรือ deploy ใหม่ได้ทันที
+
+---
+
+## 👤 ผู้ดูแล/Contributor
+
+- SafetyDady (Sanchai Saiyot)  
+- [project owner/ทีม dev เพิ่มเติม]
+
+---
+
+## 📆 Backup ณ วันที่: `2025-Jun-03`  
+*อัปเดตสถานะทุกครั้งที่ backup สำคัญ/เปลี่ยน version*
+
+---
+
+
