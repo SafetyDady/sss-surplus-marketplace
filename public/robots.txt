@@ -1,0 +1,8 @@
+User-agent: *
+Disallow:
+
+Sitemap: /sitemap.xml
+
+# File: public/robots.txt
+# Version: 1.0 | 2025-06-02
+# note: อนุญาตให้ Bot ทุกตัวเข้าได้ทุกหน้า สามารถแก้ไข/เพิ่ม disallow ได้ใน production จริง
