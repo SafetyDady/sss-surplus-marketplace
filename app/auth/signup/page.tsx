@@ -6,8 +6,8 @@ import { useAuth } from '../../../components/auth/AuthProvider'
 
 /*
 File: /app/auth/signup/page.tsx
-Version: 1.1 | 2025-06-02
-note: Sign Up + เชื่อม Auth จริง | Redirect ไปหน้า Home เมื่อสำเร็จ | แสดง error/simple loading
+Version: 1.2 | 2025-06-03
+note: [Fix] ลบ err ที่ไม่ได้ใช้ (no-unused-vars) | Sign Up เชื่อม Auth จริง | Production-ready
 */
 
 export default function SignUpPage() {
@@ -23,7 +23,7 @@ export default function SignUpPage() {
     try {
       await signUp(email, password)
       router.push('/')
-    } catch (err) {
+    } catch {
       setError('สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่')
     }
   }

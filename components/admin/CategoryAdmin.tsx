@@ -13,8 +13,9 @@ import {
 
 /*
 File: /components/admin/CategoryAdmin.tsx
-Version: 3.0 | 2025-06-03
-note: UI 3 Column (main/sub/sub2) แยก CRUD แต่ละระดับ | เลือก main > sub > sub2 | ใช้งานเหมือน Shopee/Lazada
+Version: 3.2 | 2025-06-03
+note: [Fix] Remove unused eslint-disable directive | Clean ESLint | Confirmed safe to replace
+UI 3 Column (main/sub/sub2) แยก CRUD แต่ละระดับ | เลือก main > sub > sub2 | ใช้งานเหมือน Shopee/Lazada
 */
 
 type Category = {
@@ -50,7 +51,7 @@ export default function CategoryAdmin() {
           parentId: doc.data().parentId || null,
         }))
       )
-    } catch (e) {
+    } catch {
       setError('เกิดข้อผิดพลาด')
     }
     setLoading(false)
@@ -194,8 +195,8 @@ export default function CategoryAdmin() {
                   onClick={() => setSelectedMain(cat)}
                 >
                   <span className="flex-1">{cat.name}</span>
-                  <button className="bg-yellow-300 px-2 rounded" onClick={e => { e.stopPropagation(); handleEdit(cat); }}>แก้ไข</button>
-                  <button className="bg-red-600 text-white px-2 rounded" onClick={e => { e.stopPropagation(); handleDelete(cat.id); }}>ลบ</button>
+                  <button className="bg-yellow-300 px-2 rounded" onClick={ev => { ev.stopPropagation(); handleEdit(cat); }}>แก้ไข</button>
+                  <button className="bg-red-600 text-white px-2 rounded" onClick={ev => { ev.stopPropagation(); handleDelete(cat.id); }}>ลบ</button>
                 </li>
               )
             )}
@@ -240,8 +241,8 @@ export default function CategoryAdmin() {
                   onClick={() => setSelectedSub(cat)}
                 >
                   <span className="flex-1">{cat.name}</span>
-                  <button className="bg-yellow-300 px-2 rounded" onClick={e => { e.stopPropagation(); handleEdit(cat); }}>แก้ไข</button>
-                  <button className="bg-red-600 text-white px-2 rounded" onClick={e => { e.stopPropagation(); handleDelete(cat.id); }}>ลบ</button>
+                  <button className="bg-yellow-300 px-2 rounded" onClick={ev => { ev.stopPropagation(); handleEdit(cat); }}>แก้ไข</button>
+                  <button className="bg-red-600 text-white px-2 rounded" onClick={ev => { ev.stopPropagation(); handleDelete(cat.id); }}>ลบ</button>
                 </li>
               )
             )}
@@ -282,8 +283,8 @@ export default function CategoryAdmin() {
               ) : (
                 <li key={cat.id} className="flex items-center gap-2 py-1">
                   <span className="flex-1">{cat.name}</span>
-                  <button className="bg-yellow-300 px-2 rounded" onClick={e => { e.stopPropagation(); handleEdit(cat); }}>แก้ไข</button>
-                  <button className="bg-red-600 text-white px-2 rounded" onClick={e => { e.stopPropagation(); handleDelete(cat.id); }}>ลบ</button>
+                  <button className="bg-yellow-300 px-2 rounded" onClick={ev => { ev.stopPropagation(); handleEdit(cat); }}>แก้ไข</button>
+                  <button className="bg-red-600 text-white px-2 rounded" onClick={ev => { ev.stopPropagation(); handleDelete(cat.id); }}>ลบ</button>
                 </li>
               )
             )}

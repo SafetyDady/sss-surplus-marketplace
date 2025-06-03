@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { getProducts, ProductDoc } from '../../services/productService'
 
 /*
 File: /components/product/ProductGrid.tsx
-Version: 1.1 | 2025-06-02
-note: ดึงสินค้า (products) จาก Firestore จริง | แสดง loading/error | ใช้กับ Product Page
+Version: 1.2 | 2025-06-03
+note: [Fix] เปลี่ยน <img> → <Image /> (LCP/Production) | รองรับภาพ dynamic จาก Firestore | พร้อม deploy
 */
 
 export default function ProductGrid() {
@@ -40,10 +41,13 @@ export default function ProductGrid() {
           key={product.id}
           className="bg-white border rounded shadow-sm flex flex-col p-2 hover:shadow-lg transition"
         >
-          <img
+          <Image
             src={product.mainImageUrl}
             alt={product.name}
             className="aspect-square object-cover rounded mb-2"
+            width={400}
+            height={400}
+            unoptimized
           />
           <div className="font-medium">{product.name}</div>
           <div className="text-blue-700 font-bold">{product.price} บาท</div>

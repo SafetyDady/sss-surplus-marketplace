@@ -10,8 +10,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 /*
 File: /app/vendor/add-product/page.tsx
-Version: 2.4 | 2025-06-03
-Note: แก้ error: no-unused-vars, type any → ProductFormType, ref type, accessibility Toast
+Version: 2.6 | 2025-06-03
+Note: [Fix] no-unused-vars for destructure mainImage/extraImages | Production-ready
 */
 
 function Toast({ message, show, onClose }: { message: string, show: boolean, onClose: () => void }) {
@@ -58,7 +58,7 @@ export default function AddProductPage() {
         mainImageUrl = await getDownloadURL(mainImageRef)
       }
 
-      let extraImageUrls: string[] = []
+      const extraImageUrls: string[] = []
       if (Array.isArray(data.extraImages)) {
         for (let i = 0; i < data.extraImages.length; i++) {
           const file = data.extraImages[i]
@@ -72,8 +72,14 @@ export default function AddProductPage() {
       }
 
       // 3. Prepare ข้อมูลสำหรับบันทึกใน Firestore (ไม่ส่งไฟล์, ส่ง url แทน)
-      const { mainImage, extraImages, ...rest } = data
-      const productPayload: any = {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { mainImage: _mainImage, extraImages: _extraImages, ...rest } = data
+      const productPayload: Omit<ProductFormType, "mainImage" | "extraImages"> & {
+        mainImageUrl: string,
+        extraImageUrls: string[],
+        createdAt: string,
+        active: boolean
+      } = {
         ...rest,
         mainImageUrl,
         extraImageUrls,
@@ -83,8 +89,8 @@ export default function AddProductPage() {
 
       // *** Fix: ลบ field ที่เป็น undefined ออก (Firestore ไม่ยอมรับ undefined)
       Object.keys(productPayload).forEach(key => {
-        if (productPayload[key] === undefined) {
-          delete productPayload[key]
+        if (productPayload[key as keyof typeof productPayload] === undefined) {
+          delete productPayload[key as keyof typeof productPayload]
         }
       })
 
@@ -106,6 +112,7 @@ export default function AddProductPage() {
       setToastMsg("❌ เกิดข้อผิดพลาดในการเพิ่มสินค้า")
       setShowToast(true)
       setTimeout(() => setShowToast(false), 4000)
+      // ใช้งาน err จริง (log error)
       console.error("Add product error:", err)
     } finally {
       setIsSubmitting(false)

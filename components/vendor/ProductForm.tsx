@@ -9,11 +9,10 @@ import Image from "next/image"
 
 /*
 File: /components/vendor/ProductForm.tsx
-Version: 1.5 | 2025-06-03
+Version: 1.6 | 2025-06-03
 Note:
-- เปลี่ยน <img> เป็น <Image /> (next/image) ใน preview รูปทั้งหมด
-- refactor useEffect dependency array
-- ยังมี ref resetForm & isSubmitting
+- Fix Type 'File | null' for mainImage (allow null in zod + setValue)
+- ครบฟีเจอร์/validation
 */
 
 const productSchema = z.object({
@@ -38,7 +37,7 @@ const productSchema = z.object({
   }),
   description: z.string().min(1, "กรุณาระบุรายละเอียด").max(2000),
   mainImage: z
-    .custom<File>((file) => file instanceof File && file.size > 0, {
+    .custom<File | null>((file) => file === null || (file instanceof File && file.size > 0), {
       message: "กรุณาเลือกภาพหลัก",
     }),
   extraImages: z
@@ -81,6 +80,8 @@ const ProductForm = forwardRef(function ProductForm(
       active: true,
       tags: [],
       category: { main: "", sub: "", sub2: "" },
+      mainImage: null,
+      extraImages: [],
     },
   })
 
@@ -96,7 +97,6 @@ const ProductForm = forwardRef(function ProductForm(
     })
   }, [])
 
-  // refactor: ดึงค่า watch ออกมาเป็นตัวแปร
   const mainCategory = watch("category.main")
   const subCategory = watch("category.sub")
 
@@ -128,10 +128,9 @@ const ProductForm = forwardRef(function ProductForm(
 
   function handleMainImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files && e.target.files[0] ? e.target.files[0] : null
-    setValue("mainImage", file, { shouldValidate: true })
+    setValue("mainImage", file as File | null, { shouldValidate: true })
   }
 
-  // ส่งข้อมูลให้ parent ทุกครั้งที่ฟอร์มเปลี่ยน (real-time)
   useEffect(() => {
     const subscription = watch((value) => {
       if (onChange) onChange(value as ProductFormType)
@@ -139,7 +138,6 @@ const ProductForm = forwardRef(function ProductForm(
     return () => subscription.unsubscribe()
   }, [watch, onChange])
 
-  // Expose resetForm method via ref
   useImperativeHandle(ref, () => ({
     resetForm: () => reset()
   }))

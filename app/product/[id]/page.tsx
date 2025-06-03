@@ -2,17 +2,11 @@ import ProductDetailSection from '../../../components/product/ProductDetailSecti
 
 /*
 File: /app/product/[id]/page.tsx
-Version: 1.0 | 2025-06-02
-note: หน้ารายละเอียดสินค้าแต่ละชิ้น (Dynamic route) | รับ id จาก URL | พร้อมขยายเชื่อม Firestore ในอนาคต
+Version: 1.1 | 2025-06-03
+note: [Fix] ลบ params ที่ไม่ได้ใช้ (no-unused-vars) | หน้ารายละเอียดสินค้า (Dynamic) | รอเชื่อม Firestore ในอนาคต
 */
 
-interface ProductPageProps {
-  params: {
-    id: string
-  }
-}
-
-export default function ProductDetailPage({ params }: ProductPageProps) {
+export default function ProductDetailPage() {
   // TODO: ดึงข้อมูลสินค้าโดยใช้ params.id ในอนาคต
   return (
     <div className="pt-6 min-h-screen pb-16">

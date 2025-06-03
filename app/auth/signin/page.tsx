@@ -1,14 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../components/auth/AuthProvider'
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth'
 
 /*
 File: /app/auth/signin/page.tsx
-Version: 1.3 | 2025-06-03
-note: เพิ่มรูปไอคอน Google/Facebook ในปุ่ม Social Login (ใช้ public/images/google.svg, facebook.svg)
+Version: 1.4 | 2025-06-03
+note: [Fix] ลบ err ที่ไม่ได้ใช้ (no-unused-vars) | เปลี่ยน <img> เป็น <Image /> | Social Login Production-ready
 */
 
 export default function SignInPage() {
@@ -27,7 +28,7 @@ export default function SignInPage() {
       const provider = new GoogleAuthProvider()
       await signInWithPopup(getAuth(), provider)
       router.push('/')
-    } catch (err) {
+    } catch {
       setError('เข้าสู่ระบบด้วย Google ไม่สำเร็จ')
     } finally {
       setSocialLoading(false)
@@ -42,7 +43,7 @@ export default function SignInPage() {
       const provider = new FacebookAuthProvider()
       await signInWithPopup(getAuth(), provider)
       router.push('/')
-    } catch (err) {
+    } catch {
       setError('เข้าสู่ระบบด้วย Facebook ไม่สำเร็จ')
     } finally {
       setSocialLoading(false)
@@ -56,7 +57,7 @@ export default function SignInPage() {
     try {
       await signIn(email, password)
       router.push('/')
-    } catch (err) {
+    } catch {
       setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง')
     }
   }
@@ -106,7 +107,13 @@ export default function SignInPage() {
             onClick={handleGoogleSignIn}
             disabled={socialLoading}
           >
-            <img src="/images/google.svg" alt="Google" className="w-5 h-5" />
+            <Image
+              src="/images/google.svg"
+              alt="Google"
+              width={20}
+              height={20}
+              className="w-5 h-5"
+            />
             {socialLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบด้วย Google'}
           </button>
           <button
@@ -115,7 +122,13 @@ export default function SignInPage() {
             onClick={handleFacebookSignIn}
             disabled={socialLoading}
           >
-            <img src="/images/facebook.svg" alt="Facebook" className="w-5 h-5" />
+            <Image
+              src="/images/facebook.svg"
+              alt="Facebook"
+              width={20}
+              height={20}
+              className="w-5 h-5"
+            />
             {socialLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบด้วย Facebook'}
           </button>
         </div>

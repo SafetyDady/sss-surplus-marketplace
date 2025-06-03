@@ -1,9 +1,11 @@
 'use client'
 
+import Image from 'next/image'
+
 /*
 File: /components/product/ProductDetailSection.tsx
-Version: 1.0 | 2025-06-02
-note: Section แสดงรายละเอียดสินค้า (mockup) | รอเชื่อมต่อ Firestore และ Prop จริงในอนาคต
+Version: 1.1 | 2025-06-03
+note: [Fix] เปลี่ยน <img> → <Image /> สำหรับ production (LCP/Core Web Vitals) | พร้อมใช้ | Mockup | รอ prop จริง/Firestore
 */
 
 const product = {
@@ -18,10 +20,13 @@ export default function ProductDetailSection() {
     <section className="bg-white rounded shadow p-6 my-4">
       <div className="flex flex-col md:flex-row gap-8">
         <div className="flex-shrink-0 w-full md:w-1/3">
-          <img
+          <Image
             src={product.mainImageUrl}
             alt={product.name}
             className="aspect-square object-cover rounded w-full"
+            width={500}
+            height={500}
+            priority
           />
         </div>
         <div className="flex-1 flex flex-col gap-4">
