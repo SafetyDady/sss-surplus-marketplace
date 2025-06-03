@@ -1,9 +1,11 @@
 'use client'
 
+import Image from "next/image"
+
 /*
 File: /components/vendor/ProductGridCard.tsx
-Version: 1.2 | 2025-06-03
-note: ป้องกัน product เป็น null/undefined และขึ้น placeholder ถ้าไม่มีภาพหลัก
+Version: 1.3 | 2025-06-03
+note: ใช้ <Image /> จาก next/image เพื่อ optimize LCP, รองรับทั้ง URL และ blob, มี placeholder หากไม่มีภาพ
 */
 
 type ProductGridCardProps = {
@@ -15,7 +17,6 @@ type ProductGridCardProps = {
 }
 
 export default function ProductGridCard({ product }: ProductGridCardProps) {
-  // เช็คก่อนว่า product มีจริงไหม
   if (!product) {
     return (
       <div className="bg-white border rounded shadow-sm p-2 flex flex-col items-center w-full">
@@ -29,19 +30,26 @@ export default function ProductGridCard({ product }: ProductGridCardProps) {
   }
 
   let imageUrl = ""
+  let isBlob = false
   if (product.mainImage instanceof File) {
     imageUrl = URL.createObjectURL(product.mainImage)
+    isBlob = true
   } else if (typeof product.mainImage === "string" && product.mainImage.length > 0) {
     imageUrl = product.mainImage
+    isBlob = imageUrl.startsWith("blob:")
   }
 
   return (
     <div className="bg-white border rounded shadow-sm p-2 flex flex-col items-center w-full">
       {imageUrl ? (
-        <img
+        <Image
           src={imageUrl}
           alt={product.name || "ยังไม่มีชื่อสินค้า"}
           className="aspect-square object-cover rounded w-full mb-2"
+          width={300}
+          height={300}
+          unoptimized={isBlob}
+          // ถ้า url เป็น blob: ต้องใช้ unoptimized, ถ้าเป็น url ปกติจะ optimize อัตโนมัติ
         />
       ) : (
         <div className="aspect-square bg-gray-100 flex items-center justify-center rounded w-full mb-2 text-gray-400 text-sm">

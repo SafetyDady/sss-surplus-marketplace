@@ -1,9 +1,11 @@
 'use client'
 
+import Image from "next/image"
+
 /*
 File: /components/vendor/ProductPreviewCard.tsx
-Version: 1.2 | 2025-06-03
-note: Preview สินค้าขนาดใหญ่ (ดึงรูปจาก mainImage, มี placeholder ถ้าไม่มี)
+Version: 1.3 | 2025-06-03
+note: ใช้ <Image /> จาก next/image เพื่อ optimize LCP, รองรับทั้ง URL และ blob, มี placeholder หากไม่มีภาพ
 */
 
 type ProductPreviewCardProps = {
@@ -30,19 +32,25 @@ export default function ProductPreviewCard({ product }: ProductPreviewCardProps)
   }
 
   let imageUrl = ""
+  let isBlob = false
   if (product.mainImage instanceof File) {
     imageUrl = URL.createObjectURL(product.mainImage)
+    isBlob = true
   } else if (typeof product.mainImage === "string" && product.mainImage.length > 0) {
     imageUrl = product.mainImage
+    isBlob = imageUrl.startsWith("blob:")
   }
 
   return (
     <div className="w-full max-w-[300px] bg-white border rounded shadow p-4 flex flex-col items-center">
       {imageUrl ? (
-        <img
+        <Image
           src={imageUrl}
           alt={product.name || "ยังไม่มีชื่อสินค้า"}
           className="aspect-square object-cover rounded w-full mb-2"
+          width={400}
+          height={400}
+          unoptimized={isBlob}
         />
       ) : (
         <div className="aspect-square bg-gray-100 flex items-center justify-center rounded w-full mb-2 text-gray-400 text-sm">
@@ -50,7 +58,9 @@ export default function ProductPreviewCard({ product }: ProductPreviewCardProps)
         </div>
       )}
       <div className="font-medium text-center">{product.name || "ชื่อสินค้า"}</div>
-      <div className="text-blue-700 font-bold text-center">{product.price !== undefined ? product.price : 0} บาท</div>
+      <div className="text-blue-700 font-bold text-center">
+        {product.price !== undefined ? product.price : 0} บาท
+      </div>
       <div className="text-gray-400 text-sm text-center">
         {product.description || "รายละเอียดสินค้าแสดงตัวอย่าง"}
       </div>

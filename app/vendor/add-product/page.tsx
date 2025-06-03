@@ -10,8 +10,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 /*
 File: /app/vendor/add-product/page.tsx
-Version: 2.3 | 2025-06-03
-Note: ปรับ type any → ProductFormType, ref type, เพิ่ม accessibility Toast
+Version: 2.4 | 2025-06-03
+Note: แก้ error: no-unused-vars, type any → ProductFormType, ref type, accessibility Toast
 */
 
 function Toast({ message, show, onClose }: { message: string, show: boolean, onClose: () => void }) {
@@ -102,11 +102,11 @@ export default function AddProductPage() {
       setToastMsg("✅ เพิ่มสินค้าเรียบร้อยแล้ว")
       setShowToast(true)
       setTimeout(() => setShowToast(false), 3000)
-    } catch (e) {
+    } catch (err) {
       setToastMsg("❌ เกิดข้อผิดพลาดในการเพิ่มสินค้า")
       setShowToast(true)
       setTimeout(() => setShowToast(false), 4000)
-      console.error("Add product error:", e)
+      console.error("Add product error:", err)
     } finally {
       setIsSubmitting(false)
     }

@@ -5,13 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react"
 import { getCategoryTree } from "../../services/categoryService"
+import Image from "next/image"
 
 /*
 File: /components/vendor/ProductForm.tsx
-Version: 1.4 | 2025-06-03
+Version: 1.5 | 2025-06-03
 Note:
-- แก้ setValue tags: ไม่ใช้ any (เปลี่ยนเป็น string[])
-- ปรับ logic preview รูป img ได้มาตรฐาน (ถ้าต้องการใช้ <Image /> เพิ่มเติม แจ้งได้)
+- เปลี่ยน <img> เป็น <Image /> (next/image) ใน preview รูปทั้งหมด
+- refactor useEffect dependency array
 - ยังมี ref resetForm & isSubmitting
 */
 
@@ -50,7 +51,7 @@ const productSchema = z.object({
   tags: z.array(z.string()).max(5, "Tag ได้สูงสุด 5 คำ").optional(),
 })
 
-type ProductFormType = z.infer<typeof productSchema>
+export type ProductFormType = z.infer<typeof productSchema>
 interface CategoryNode {
   id: string
   name: string
@@ -95,9 +96,13 @@ const ProductForm = forwardRef(function ProductForm(
     })
   }, [])
 
+  // refactor: ดึงค่า watch ออกมาเป็นตัวแปร
+  const mainCategory = watch("category.main")
+  const subCategory = watch("category.sub")
+
   useEffect(() => {
-    const mainId = watch("category.main")
-    const subId = watch("category.sub")
+    const mainId = mainCategory
+    const subId = subCategory
     const selectedMain = categories.find(c => c.id === mainId)
     setSubList(selectedMain?.children || [])
     if (!selectedMain || !mainId) {
@@ -111,14 +116,14 @@ const ProductForm = forwardRef(function ProductForm(
     if (!selectedSub || !subId) {
       setValue("category.sub2", "")
     }
-  }, [watch("category.main"), watch("category.sub"), categories, setValue])
+  }, [mainCategory, subCategory, categories, setValue])
 
   function handleTagsInput(e: React.ChangeEvent<HTMLInputElement>) {
     const tagsArr = e.target.value
       .split(",")
       .map((tag) => tag.trim())
       .filter((tag) => tag.length > 0)
-    setValue("tags", tagsArr) // **แก้: ไม่ใช้ any**
+    setValue("tags", tagsArr)
   }
 
   function handleMainImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -259,7 +264,14 @@ const ProductForm = forwardRef(function ProductForm(
             {extraImages.map((file, idx) =>
               file && typeof file === "object" && "name" in file ? (
                 <div key={idx} className="w-16 h-16 border rounded overflow-hidden flex flex-col items-center">
-                  <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-full object-cover" />
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    className="w-full h-full object-cover"
+                    width={64}
+                    height={64}
+                    unoptimized
+                  />
                   <div className="text-xs text-gray-500 truncate">{file.name}</div>
                 </div>
               ) : null
