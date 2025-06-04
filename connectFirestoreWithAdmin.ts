@@ -1,5 +1,5 @@
 import admin from "firebase-admin"
-import serviceAccount from "../serviceAccountKey.json"
+
 
 // ตรวจสอบก่อน initialize เพื่อไม่ให้ซ้ำ
 if (!admin.apps.length) {
