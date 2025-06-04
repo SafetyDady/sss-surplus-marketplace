@@ -10,21 +10,31 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 /*
 File: /app/vendor/add-product/page.tsx
-Version: 2.6 | 2025-06-03
-Note: [Fix] no-unused-vars for destructure mainImage/extraImages | Production-ready
+Version: 2.9 | 2025-06-04
+Note:
+- Toast ตัวหนังสือสีดำ contrast กับพื้นขาว 100%
+- ปุ่มปิด Toast สีดำจาง มองเห็นบนพื้นขาวทุกกรณี
+- layout, logic, mapping ตรงตาม version ล่าสุด
 */
 
 function Toast({ message, show, onClose }: { message: string, show: boolean, onClose: () => void }) {
   return (
     <div
-      className={`fixed top-6 right-6 z-50 px-5 py-3 rounded shadow-lg text-white font-semibold transition-all duration-300
-        ${show ? "bg-green-600 opacity-100" : "opacity-0 pointer-events-none"}`}
-      style={{ minWidth: 260 }}
+      className={`fixed top-6 right-6 z-50 px-5 py-3 rounded shadow-lg text-black font-semibold transition-all duration-300
+        ${show ? "bg-white opacity-100" : "opacity-0 pointer-events-none"}`}
+      style={{ minWidth: 260, border: "1px solid #d1d5db" }} // เพิ่มขอบเทาอ่อนให้เด่นขึ้น
       role="alert"
       aria-live="assertive"
     >
       {message}
-      <button className="ml-6 text-white/80" tabIndex={0} onClick={onClose}>ปิด</button>
+      <button
+        className="ml-6 text-black/50 hover:text-black font-normal"
+        tabIndex={0}
+        onClick={onClose}
+        style={{ outline: "none" }}
+      >
+        ปิด
+      </button>
     </div>
   )
 }
@@ -120,13 +130,14 @@ export default function AddProductPage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 py-6 max-w-7xl mx-auto">
+    <div className="flex flex-col lg:flex-row gap-8 py-6 max-w-[1440px] mx-auto">
       <Toast
         message={toastMsg}
         show={showToast}
         onClose={() => setShowToast(false)}
       />
-      <div className="w-full lg:w-1/2">
+      {/* 40% ฟอร์ม */}
+      <div className="w-full lg:w-[40%]">
         <ProductForm
           ref={formRef}
           onChange={handleFormChange}
@@ -134,9 +145,15 @@ export default function AddProductPage() {
           isSubmitting={isSubmitting}
         />
       </div>
-      <div className="w-full lg:w-1/2 flex flex-col gap-4">
+      {/* 60% Preview Card + Grid */}
+      <div className="w-full lg:w-[60%] flex flex-col gap-4">
         <h2 className="font-bold text-lg mb-2">Preview สินค้า</h2>
-        <ProductPreviewCard product={productData} />
+        <ProductPreviewCard
+          product={{
+            ...productData,
+            sku: productData?.SKU || "-", // **สำคัญ: mapping SKU -> sku**
+          }}
+        />
         <h3 className="font-semibold text-base mt-4 mb-2">Preview แบบ Grid</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           <ProductGridCard product={productData} />

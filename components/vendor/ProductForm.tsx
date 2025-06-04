@@ -9,10 +9,10 @@ import Image from "next/image"
 
 /*
 File: /components/vendor/ProductForm.tsx
-Version: 1.6 | 2025-06-03
+Version: 2.5 | 2025-06-04
 Note:
-- Fix Type 'File | null' for mainImage (allow null in zod + setValue)
-- ครบฟีเจอร์/validation
+- ปุ่ม “ยืนยันเพิ่มสินค้า” ใช้ className แบบเดียวกับปุ่ม “ซื้อเลย” (btn btn-primary w-full)
+- ปรับ style ให้เป็นปุ่มสีน้ำเงินเข้ม เด่น เหมือนใน PreviewCard
 */
 
 const productSchema = z.object({
@@ -37,15 +37,15 @@ const productSchema = z.object({
   }),
   description: z.string().min(1, "กรุณาระบุรายละเอียด").max(2000),
   mainImage: z
-    .custom<File | null>((file) => file === null || (file instanceof File && file.size > 0), {
-      message: "กรุณาเลือกภาพหลัก",
-    }),
+    .instanceof(File, { message: "กรุณาเลือกภาพหลัก" })
+    .refine((file) => file && file.size > 0, { message: "กรุณาเลือกภาพหลัก" }),
   extraImages: z
     .array(z.any())
     .min(1, "ต้องมีภาพเพิ่มเติมอย่างน้อย 1 รูป")
     .max(4, "ใส่ได้สูงสุด 4 รูป"),
   SKU: z.string().optional(),
   brand: z.string().optional(),
+  delivery: z.string().min(1, "กรุณาระบุข้อมูลการขนส่ง"),
   active: z.boolean().default(true),
   tags: z.array(z.string()).max(5, "Tag ได้สูงสุด 5 คำ").optional(),
 })
@@ -80,7 +80,7 @@ const ProductForm = forwardRef(function ProductForm(
       active: true,
       tags: [],
       category: { main: "", sub: "", sub2: "" },
-      mainImage: null,
+      mainImage: undefined,
       extraImages: [],
     },
   })
@@ -99,6 +99,7 @@ const ProductForm = forwardRef(function ProductForm(
 
   const mainCategory = watch("category.main")
   const subCategory = watch("category.sub")
+  const sub2Category = watch("category.sub2")
 
   useEffect(() => {
     const mainId = mainCategory
@@ -118,6 +119,12 @@ const ProductForm = forwardRef(function ProductForm(
     }
   }, [mainCategory, subCategory, categories, setValue])
 
+  // ---- LOG DEBUG ----
+  useEffect(() => {
+    console.log("DEBUG (ProductForm): main =", mainCategory, "sub =", subCategory, "sub2 =", sub2Category)
+  }, [mainCategory, subCategory, sub2Category])
+  // -------------------
+
   function handleTagsInput(e: React.ChangeEvent<HTMLInputElement>) {
     const tagsArr = e.target.value
       .split(",")
@@ -127,8 +134,8 @@ const ProductForm = forwardRef(function ProductForm(
   }
 
   function handleMainImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files && e.target.files[0] ? e.target.files[0] : null
-    setValue("mainImage", file as File | null, { shouldValidate: true })
+    const file = e.target.files && e.target.files[0] ? e.target.files[0] : undefined
+    setValue("mainImage", file as File, { shouldValidate: true })
   }
 
   useEffect(() => {
@@ -139,7 +146,12 @@ const ProductForm = forwardRef(function ProductForm(
   }, [watch, onChange])
 
   useImperativeHandle(ref, () => ({
-    resetForm: () => reset()
+    resetForm: () => {
+      reset()
+      setValue("category.main", "")
+      setValue("category.sub", "")
+      setValue("category.sub2", "")
+    }
   }))
 
   const extraImages = watch("extraImages") as File[] | undefined
@@ -157,19 +169,19 @@ const ProductForm = forwardRef(function ProductForm(
       <div>
         <label className="block font-semibold">หมวดหมู่ *</label>
         <div className="flex gap-2">
-          <select {...register("category.main")} className="input input-bordered">
+          <select {...register("category.main")} className="input input-bordered flex-1 min-w-0 max-w-[180px]">
             <option value="">-- เลือกหมวดหมู่หลัก --</option>
             {mainList.map(m => (
               <option key={m.id} value={m.id}>{m.name}</option>
             ))}
           </select>
-          <select {...register("category.sub")} className="input input-bordered" disabled={subList.length === 0}>
+          <select {...register("category.sub")} className="input input-bordered flex-1 min-w-0 max-w-[180px]" disabled={subList.length === 0}>
             <option value="">-- เลือกหมวดหมู่ย่อย --</option>
             {subList.map(s => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
-          <select {...register("category.sub2")} className="input input-bordered" disabled={sub2List.length === 0}>
+          <select {...register("category.sub2")} className="input input-bordered flex-1 min-w-0 max-w-[180px]" disabled={sub2List.length === 0}>
             <option value="">-- เลือกหมวดหมู่ย่อยลึกสุด --</option>
             {sub2List.map(s2 => (
               <option key={s2.id} value={s2.id}>{s2.name}</option>
@@ -182,35 +194,48 @@ const ProductForm = forwardRef(function ProductForm(
           </div>
         )}
       </div>
-      {/* ราคา */}
-      <div>
-        <label className="block font-semibold">ราคา (บาท) *</label>
-        <input type="number" step="0.01" {...register("price")} className="input input-bordered w-full" />
-        {errors.price && <div className="text-red-600 text-sm">{errors.price.message}</div>}
+      {/* ราคา + ราคาพิเศษ */}
+      <div className="flex gap-2">
+        <div className="w-1/2">
+          <label className="block font-semibold">ราคา (บาท) *</label>
+          <input type="number" step="0.01" {...register("price")} className="input input-bordered w-full" />
+          {errors.price && <div className="text-red-600 text-sm">{errors.price.message}</div>}
+        </div>
+        <div className="w-1/2">
+          <label className="block font-semibold">ราคาพิเศษ</label>
+          <input type="number" step="0.01" {...register("salePrice")} className="input input-bordered w-full" />
+          {errors.salePrice && <div className="text-red-600 text-sm">{errors.salePrice.message}</div>}
+        </div>
       </div>
-      {/* ราคาพิเศษ */}
-      <div>
-        <label className="block font-semibold">ราคาพิเศษ</label>
-        <input type="number" step="0.01" {...register("salePrice")} className="input input-bordered w-full" />
-        {errors.salePrice && <div className="text-red-600 text-sm">{errors.salePrice.message}</div>}
+      {/* จำนวนในสต็อก + หน่วย */}
+      <div className="flex gap-2">
+        <div className="w-1/2">
+          <label className="block font-semibold">จำนวนในสต็อก *</label>
+          <input type="number" {...register("stock")} className="input input-bordered w-full" />
+          {errors.stock && <div className="text-red-600 text-sm">{errors.stock.message}</div>}
+        </div>
+        <div className="w-1/2">
+          <label className="block font-semibold">หน่วย *</label>
+          <input {...register("unit")} className="input input-bordered w-full" placeholder="เช่น ชิ้น, ม้วน" />
+          {errors.unit && <div className="text-red-600 text-sm">{errors.unit.message}</div>}
+        </div>
       </div>
-      {/* จำนวนในสต็อก */}
-      <div>
-        <label className="block font-semibold">จำนวนในสต็อก *</label>
-        <input type="number" {...register("stock")} className="input input-bordered w-full" />
-        {errors.stock && <div className="text-red-600 text-sm">{errors.stock.message}</div>}
-      </div>
-      {/* หน่วย */}
-      <div>
-        <label className="block font-semibold">หน่วย *</label>
-        <input {...register("unit")} className="input input-bordered w-full" placeholder="เช่น ชิ้น, ม้วน" />
-        {errors.unit && <div className="text-red-600 text-sm">{errors.unit.message}</div>}
-      </div>
-      {/* น้ำหนัก */}
-      <div>
-        <label className="block font-semibold">น้ำหนัก (kg) *</label>
-        <input type="number" step="0.01" {...register("weight")} className="input input-bordered w-full" />
-        {errors.weight && <div className="text-red-600 text-sm">{errors.weight.message}</div>}
+      {/* น้ำหนัก + การขนส่ง */}
+      <div className="flex gap-2">
+        <div className="w-1/2">
+          <label className="block font-semibold">น้ำหนัก (kg) *</label>
+          <input type="number" step="0.01" {...register("weight")} className="input input-bordered w-full" />
+          {errors.weight && <div className="text-red-600 text-sm">{errors.weight.message}</div>}
+        </div>
+        <div className="w-1/2">
+          <label className="block font-semibold">การขนส่ง *</label>
+          <input
+            {...register("delivery")}
+            className="input input-bordered w-full"
+            placeholder="ขนส่งโดย บริษัทรถ, Kerry, DHL ฯลฯ"
+          />
+          {errors.delivery && <div className="text-red-600 text-sm">{errors.delivery.message}</div>}
+        </div>
       </div>
       {/* ขนาด (กว้าง/ยาว/สูง) */}
       <div>
@@ -305,7 +330,14 @@ const ProductForm = forwardRef(function ProductForm(
       {/* Submit */}
       <button
         type="submit"
-        className="btn btn-primary w-full"
+        className="btn btn-primary w-full mt-4 py-3 text-lg font-bold"
+        style={{
+          background: '#2563eb',   // Tailwind blue-600
+          border: '1.5px solid #2563eb',
+          color: '#fff',
+          borderRadius: '0.5rem',
+          boxShadow: '0 1px 8px rgba(37,99,235,0.08)',
+        }}
         disabled={isSubmitting}
       >
         {isSubmitting ? "กำลังเพิ่มสินค้า..." : "ยืนยันเพิ่มสินค้า"}
