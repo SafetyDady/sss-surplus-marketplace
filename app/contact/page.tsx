@@ -32,6 +32,90 @@ export default function ContactPage() {
           padding: 4rem 2rem;
         }
         
+        .vendor-section {
+          background: white;
+          padding: 3rem 2rem;
+          border-radius: 16px;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+          margin-bottom: 4rem;
+          text-align: center;
+        }
+        
+        .vendor-section h2 {
+          font-size: 2.2rem;
+          font-weight: bold;
+          margin-bottom: 1rem;
+          color: #333;
+        }
+        
+        .vendor-description {
+          font-size: 1.1rem;
+          color: #666;
+          line-height: 1.8;
+          max-width: 800px;
+          margin: 0 auto 3rem auto;
+        }
+        
+        .vendor-benefits {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 2rem;
+          margin-bottom: 3rem;
+        }
+        
+        .benefit-item {
+          background: #f8fafc;
+          padding: 1.5rem;
+          border-radius: 12px;
+          text-align: left;
+        }
+        
+        .benefit-icon {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+        }
+        
+        .benefit-content h3 {
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: #333;
+        }
+        
+        .benefit-content p {
+          color: #666;
+          line-height: 1.6;
+          font-size: 0.95rem;
+        }
+        
+        .vendor-cta {
+          text-align: center;
+        }
+        
+        .vendor-btn {
+          display: inline-block;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 1rem 2.5rem;
+          border-radius: 12px;
+          text-decoration: none;
+          font-size: 1.1rem;
+          font-weight: 600;
+          transition: transform 0.3s, box-shadow 0.3s;
+          margin-bottom: 1rem;
+        }
+        
+        .vendor-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .vendor-note {
+          color: #666;
+          font-size: 0.9rem;
+          font-style: italic;
+        }
+        
         .contact-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -260,6 +344,58 @@ export default function ContactPage() {
       </section>
 
       <div className="contact-container">
+        {/* Vendor Section */}
+        <div className="vendor-section">
+          <h2>🤝 สนใจเป็น Vendor กับเรา?</h2>
+          <p className="vendor-description">
+            เข้าร่วมเป็นส่วนหนึ่งของ SSS Supply Marketplace แพลตฟอร์มการซื้อขายสินค้า Surplus ที่ใหญ่ที่สุดในประเทศไทย 
+            เราเปิดโอกาสให้ธุรกิจของคุณเข้าถึงลูกค้าใหม่และเพิ่มยอดขายอย่างมีประสิทธิภาพ
+          </p>
+          
+          <div className="vendor-benefits">
+            <div className="benefit-item">
+              <div className="benefit-icon">🌟</div>
+              <div className="benefit-content">
+                <h3>เข้าถึงลูกค้าใหม่</h3>
+                <p>เชื่อมต่อกับเครือข่ายลูกค้าที่กว้างขวางทั่วประเทศ</p>
+              </div>
+            </div>
+            
+            <div className="benefit-item">
+              <div className="benefit-icon">💰</div>
+              <div className="benefit-content">
+                <h3>เพิ่มยอดขาย</h3>
+                <p>ขายสินค้า Surplus ได้ง่ายขึ้นด้วยแพลตฟอร์มที่มีประสิทธิภาพ</p>
+              </div>
+            </div>
+            
+            <div className="benefit-item">
+              <div className="benefit-icon">🚀</div>
+              <div className="benefit-content">
+                <h3>ง่ายต่อการจัดการ</h3>
+                <p>ระบบจัดการสินค้าและคำสั่งซื้อที่ใช้งานง่าย</p>
+              </div>
+            </div>
+            
+            <div className="benefit-item">
+              <div className="benefit-icon">🛡️</div>
+              <div className="benefit-content">
+                <h3>ความปลอดภัย</h3>
+                <p>ระบบการชำระเงินที่ปลอดภัยและการสนับสนุนลูกค้าตลอด 24 ชั่วโมง</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="vendor-cta">
+            <a href="/vendor-registration" className="vendor-btn">
+              📝 สมัครเป็น Vendor
+            </a>
+            <p className="vendor-note">
+              * ฟรี! ไม่มีค่าสมัคร เริ่มขายได้ทันทีหลังจากได้รับการอนุมัติ
+            </p>
+          </div>
+        </div>
+
         {/* Contact Form & Info Grid */}
         <div className="contact-grid">
           {/* Contact Form */}
