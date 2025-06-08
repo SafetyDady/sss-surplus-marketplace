@@ -70,7 +70,7 @@ export default function VendorApprovalDashboard() {
       setActionMsg(approve ? "✅ อนุมัติ Vendor สำเร็จ" : "❌ ปฏิเสธ Vendor สำเร็จ")
       await fetchPendingVendors()
       setTimeout(() => setActionMsg(""), 3000)
-    } catch (error) {
+    } catch {
       setActionMsg("❌ เกิดข้อผิดพลาด กรุณาลองใหม่")
       setTimeout(() => setActionMsg(""), 3000)
     }

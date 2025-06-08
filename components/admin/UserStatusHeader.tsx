@@ -2,12 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { ChevronDown, User, Settings, LogOut, Shield, Store } from 'lucide-react'
+import Image from 'next/image'
 
 /*
 File: /components/admin/UserStatusHeader.tsx
-Version: 1.0 | 2025-06-07
+Version: 1.1 | 2025-06-08
 note: 
 - User Status Header Component สำหรับแสดงสถานะผู้ใช้
+- แก้ไข img tags เป็น Next.js Image component
+*/
 - รองรับ Google Profile Picture และ Role indicators
 - มี dropdown menu สำหรับ user actions
 */
@@ -88,9 +91,11 @@ export default function UserStatusHeader({
         {/* User Avatar */}
         <div className="relative">
           {user.photoURL ? (
-            <img
+            <Image
               src={user.photoURL}
               alt={displayName}
+              width={32}
+              height={32}
               className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
@@ -133,9 +138,11 @@ export default function UserStatusHeader({
           <div className="px-4 py-3 border-b border-gray-100">
             <div className="flex items-center gap-3">
               {user.photoURL ? (
-                <img
+                <Image
                   src={user.photoURL}
                   alt={displayName}
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
