@@ -798,9 +798,9 @@ export default function Home() {
           {/* Desktop Navigation */}
           <nav className="nav">
             <div className="nav-links">
-              <a href="#products">สินค้า</a>
+              <a href="/products">สินค้า</a>
               <a href="#categories">หมวดหมู่</a>
-              <a href="#about">เกี่ยวกับเรา</a>
+              <a href="/about">เกี่ยวกับเรา</a>
               <a href="#contact">ติดต่อเรา</a>
             </div>
           </nav>
@@ -818,9 +818,9 @@ export default function Home() {
           
           {/* Mobile Menu Dropdown */}
           <div className="mobile-menu" id="mobileMenu">
-            <a href="#products">สินค้า</a>
+            <a href="/products">สินค้า</a>
             <a href="#categories">หมวดหมู่</a>
-            <a href="#about">เกี่ยวกับเรา</a>
+            <a href="/about">เกี่ยวกับเรา</a>
             <a href="#contact">ติดต่อเรา</a>
           </div>
         </div>
