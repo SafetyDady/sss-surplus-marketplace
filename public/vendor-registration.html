@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครเป็น Vendor - SSS Supply</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-section p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .benefits-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .benefit-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .benefit-card p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Registration Form Section */
+        .form-section {
+            padding: 4rem 0;
+            background: #f8fafc;
+        }
+
+        .form-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .form-section .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        .form-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid #e1e8ed;
+        }
+
+        .form-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .form-tab.active {
+            color: #10b981;
+            border-bottom-color: #10b981;
+        }
+
+        .form-content {
+            display: none;
+        }
+
+        .form-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+            line-height: 1.6;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e1e8ed;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d9e0;
+        }
+
+        /* Requirements Section */
+        .requirements-section {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .requirements-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .requirement-icon {
+            font-size: 1.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .requirement-content h3 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .requirement-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Process Section */
+        .process-section {
+            padding: 4rem 0;
+            background: #f8fafc;
+        }
+
+        .process-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .process-step {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .process-step h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .process-step p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .form-container {
+                padding: 2rem 1rem;
+            }
+            
+            .form-tabs {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .form-tab {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>🌟 สมัครเป็น Vendor</h1>
+            <p>เข้าร่วมเครือข่าย SSS Supply และขยายธุรกิจของคุณไปกับเรา<br/>
+            แพลตฟอร์มการขายสินค้า Surplus ที่ใหญ่ที่สุดในประเทศไทย</p>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section">
+        <div class="container">
+            <h2>🎁 ประโยชน์ที่คุณจะได้รับ</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🌟</div>
+                    <h3>เข้าถึงลูกค้าใหม่</h3>
+                    <p>เครือข่ายลูกค้าที่กว้างขวางและมีความต้องการสินค้า Surplus อย่างต่อเนื่อง</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">💰</div>
+                    <h3>เพิ่มยอดขาย</h3>
+                    <p>แพลตฟอร์มที่ช่วยเพิ่มช่องทางการขายและสร้างรายได้เพิ่มเติมให้กับธุรกิจ</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🚀</div>
+                    <h3>ง่ายต่อการจัดการ</h3>
+                    <p>ระบบจัดการสินค้าและคำสั่งซื้อที่ใช้งานง่าย พร้อม Dashboard ที่ครบครัน</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🛡️</div>
+                    <h3>ความปลอดภัย</h3>
+                    <p>ระบบการชำระเงินที่ปลอดภัยและการสนับสนุนลูกค้าตลอด 24 ชั่วโมง</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📊</div>
+                    <h3>รายงานการขาย</h3>
+                    <p>ระบบรายงานและสถิติการขายที่ละเอียด ช่วยวิเคราะห์และพัฒนาธุรกิจ</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🆓</div>
+                    <h3>ไม่มีค่าสมัคร</h3>
+                    <p>สมัครฟรี! ไม่มีค่าใช้จ่ายล่วงหน้า เริ่มขายได้ทันทีหลังจากได้รับการอนุมัติ</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Form Section -->
+    <section class="form-section">
+        <div class="container">
+            <div class="form-container">
+                <h2>📝 ใบสมัครเป็น Vendor</h2>
+                <p class="subtitle">กรุณากรอกข้อมูลให้ครบถ้วนเพื่อการพิจารณาที่รวดเร็ว</p>
+                
+                <div class="form-tabs">
+                    <button class="form-tab active" onclick="showTab(0)">ข้อมูลบริษัท</button>
+                    <button class="form-tab" onclick="showTab(1)">ข้อมูลผู้ติดต่อ</button>
+                    <button class="form-tab" onclick="showTab(2)">ข้อมูลสินค้า</button>
+                    <button class="form-tab" onclick="showTab(3)">ข้อมูลเพิ่มเติม</button>
+                </div>
+
+                <form id="vendorRegistrationForm">
+                    <!-- Tab 1: ข้อมูลบริษัท -->
+                    <div class="form-content active">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="companyName">ชื่อบริษัท/ร้านค้า *</label>
+                                <input type="text" id="companyName" name="companyName" required 
+                                       placeholder="บริษัท ABC จำกัด">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="businessType">ประเภทธุรกิจ *</label>
+                                <select id="businessType" name="businessType" required>
+                                    <option value="">เลือกประเภทธุรกิจ</option>
+                                    <option value="manufacturer">ผู้ผลิต</option>
+                                    <option value="distributor">ผู้จัดจำหน่าย</option>
+                                    <option value="retailer">ผู้ค้าปลีก</option>
+                                    <option value="wholesaler">ผู้ค้าส่ง</option>
+                                    <option value="importer">ผู้นำเข้า</option>
+                                    <option value="other">อื่นๆ</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="companyAddress">ที่อยู่บริษัท *</label>
+                            <textarea id="companyAddress" name="companyAddress" required 
+                                      placeholder="123/45 ถนนสุขุมวิท แขวงคลองตัน เขตวัฒนา กรุงเทพมหานคร 10110"></textarea>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="taxId">เลขประจำตัวผู้เสียภาษี</label>
+                                <input type="text" id="taxId" name="taxId" 
+                                       placeholder="1234567890123">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="website">เว็บไซต์บริษัท</label>
+                                <input type="url" id="website" name="website" 
+                                       placeholder="https://www.company.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: ข้อมูลผู้ติดต่อ -->
+                    <div class="form-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="contactName">ชื่อ-นามสกุล ผู้ติดต่อ *</label>
+                                <input type="text" id="contactName" name="contactName" required 
+                                       placeholder="นายสมชาย ใจดี">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="position">ตำแหน่ง *</label>
+                                <input type="text" id="position" name="position" required 
+                                       placeholder="ผู้จัดการฝ่ายขาย">
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="email">อีเมล *</label>
+                                <input type="email" id="email" name="email" required 
+                                       placeholder="contact@company.com">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">เบอร์โทรศัพท์ *</label>
+                                <input type="tel" id="phone" name="phone" required 
+                                       placeholder="02-123-4567">
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="mobile">เบอร์มือถือ *</label>
+                                <input type="tel" id="mobile" name="mobile" required 
+                                       placeholder="089-123-4567">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="lineId">Line ID</label>
+                                <input type="text" id="lineId" name="lineId" 
+                                       placeholder="@company_line">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: ข้อมูลสินค้า -->
+                    <div class="form-content">
+                        <div class="form-group">
+                            <label for="productCategories">หมวดหมู่สินค้าที่ต้องการขาย *</label>
+                            <select id="productCategories" name="productCategories" required>
+                                <option value="">เลือกหมวดหมู่สินค้า</option>
+                                <option value="electronics">อิเล็กทรอนิกส์</option>
+                                <option value="clothing">เสื้อผ้า</option>
+                                <option value="home">ของใช้ในบ้าน</option>
+                                <option value="sports">อุปกรณ์กีฬา</option>
+                                <option value="automotive">อะไหล่รถยนต์</option>
+                                <option value="industrial">อุปกรณ์อุตสาหกรรม</option>
+                                <option value="food">อาหารและเครื่องดื่ม</option>
+                                <option value="other">อื่นๆ</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productDescription">รายละเอียดสินค้า *</label>
+                            <textarea id="productDescription" name="productDescription" required 
+                                      placeholder="อธิบายประเภทสินค้า Surplus ที่ต้องการขาย เช่น สินค้าเหลือจากการผลิต สินค้าที่มีข้อบกพร่องเล็กน้อย ฯลฯ"></textarea>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="monthlyVolume">ปริมาณสินค้าต่อเดือน (โดยประมาณ) *</label>
+                                <select id="monthlyVolume" name="monthlyVolume" required>
+                                    <option value="">เลือกปริมาณ</option>
+                                    <option value="1-50">1-50 ชิ้น</option>
+                                    <option value="51-200">51-200 ชิ้น</option>
+                                    <option value="201-500">201-500 ชิ้น</option>
+                                    <option value="501-1000">501-1,000 ชิ้น</option>
+                                    <option value="1000+">มากกว่า 1,000 ชิ้น</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="experience">ประสบการณ์การขายออนไลน์ *</label>
+                                <select id="experience" name="experience" required>
+                                    <option value="">เลือกประสบการณ์</option>
+                                    <option value="none">ไม่มีประสบการณ์</option>
+                                    <option value="1-2">1-2 ปี</option>
+                                    <option value="3-5">3-5 ปี</option>
+                                    <option value="5+">มากกว่า 5 ปี</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: ข้อมูลเพิ่มเติม -->
+                    <div class="form-content">
+                        <div class="form-group">
+                            <label for="motivation">เหตุผลที่ต้องการเข้าร่วมเป็น Vendor *</label>
+                            <textarea id="motivation" name="motivation" required 
+                                      placeholder="อธิบายเหตุผลที่ต้องการขายสินค้าผ่าน SSS Supply และเป้าหมายทางธุรกิจ"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="otherPlatforms">แพลตฟอร์มอื่นที่ใช้ขายสินค้า</label>
+                            <textarea id="otherPlatforms" name="otherPlatforms" 
+                                      placeholder="เช่น Shopee, Lazada, Facebook, เว็บไซต์ตัวเอง ฯลฯ"></textarea>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">
+                                ข้าพเจ้ายอมรับ <a href="/terms" target="_blank">ข้อตกลงและเงื่อนไข</a> 
+                                และ <a href="/privacy" target="_blank">นโยบายความเป็นส่วนตัว</a> ของ SSS Supply *
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newsletter" name="newsletter">
+                            <label for="newsletter">
+                                ต้องการรับข่าวสารและข้อมูลการตลาดจาก SSS Supply
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeTab(-1)" style="display: none;">
+                            ← ย้อนกลับ
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeTab(1)">
+                            ถัดไป →
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">
+                            📤 ส่งใบสมัคร
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Requirements Section -->
+    <section class="requirements-section">
+        <div class="container">
+            <h2>📋 เงื่อนไขการสมัคร</h2>
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <div class="requirement-icon">✅</div>
+                    <div class="requirement-content">
+                        <h3>ธุรกิจถูกกฎหมาย</h3>
+                        <p>มีใบอนุญาตประกอบธุรกิจที่ถูกต้องและสินค้าที่ขายต้องถูกกฎหมาย</p>
+                    </div>
+                </div>
+                
+                <div class="requirement-item">
+                    <div class="requirement-icon">⭐</div>
+                    <div class="requirement-content">
+                        <h3>สินค้าคุณภาพดี</h3>
+                        <p>สินค้า Surplus ต้องมีคุณภาพดี ใช้งานได้จริง และมีการบรรยายที่ตรงตามความเป็นจริง</p>
+                    </div>
+                </div>
+                
+                <div class="requirement-item">
+                    <div class="requirement-icon">📸</div>
+                    <div class="requirement-content">
+                        <h3>รูปภาพสินค้า</h3>
+                        <p>ต้องมีรูปภาพสินค้าที่ชัดเจน แสดงสภาพจริงของสินค้า และมีคุณภาพดี</p>
+                    </div>
+                </div>
+                
+                <div class="requirement-item">
+                    <div class="requirement-icon">🚚</div>
+                    <div class="requirement-content">
+                        <h3>การจัดส่ง</h3>
+                        <p>สามารถจัดส่งสินค้าได้ภายใน 3-5 วันทำการ และมีการบรรจุหีบห่อที่ดี</p>
+                    </div>
+                </div>
+                
+                <div class="requirement-item">
+                    <div class="requirement-icon">💬</div>
+                    <div class="requirement-content">
+                        <h3>การสื่อสาร</h3>
+                        <p>ตอบกลับข้อความลูกค้าภายใน 24 ชั่วโมง และให้บริการลูกค้าอย่างมืออาชีพ</p>
+                    </div>
+                </div>
+                
+                <div class="requirement-item">
+                    <div class="requirement-icon">📊</div>
+                    <div class="requirement-content">
+                        <h3>รายงานการขาย</h3>
+                        <p>ส่งรายงานการขายและสต็อกสินค้าให้กับ SSS Supply เป็นประจำทุกเดือน</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <h2>🔄 ขั้นตอนการสมัคร</h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3>กรอกใบสมัคร</h3>
+                    <p>กรอกข้อมูลในใบสมัครให้ครบถ้วนและตรวจสอบความถูกต้อง</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3>ตรวจสอบข้อมูล</h3>
+                    <p>ทีมงานจะตรวจสอบข้อมูลและติดต่อกลับภายใน 2-3 วันทำการ</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3>อนุมัติบัญชี</h3>
+                    <p>หลังจากผ่านการตรวจสอบ จะได้รับ username และ password สำหรับเข้าระบบ</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3>เริ่มขายสินค้า</h3>
+                    <p>เข้าสู่ระบบ Vendor Dashboard และเริ่มอัพโหลดสินค้าเพื่อขาย</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let currentTab = 0;
+        const tabs = document.querySelectorAll('.form-content');
+        const tabButtons = document.querySelectorAll('.form-tab');
+
+        function showTab(tabIndex) {
+            // Hide all tabs
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            tabs[tabIndex].classList.add('active');
+            tabButtons[tabIndex].classList.add('active');
+            
+            currentTab = tabIndex;
+            updateNavigation();
+        }
+
+        function changeTab(direction) {
+            const newTab = currentTab + direction;
+            if (newTab >= 0 && newTab < tabs.length) {
+                showTab(newTab);
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Show/hide previous button
+            prevBtn.style.display = currentTab === 0 ? 'none' : 'block';
+            
+            // Show/hide next/submit button
+            if (currentTab === tabs.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Form submission
+        document.getElementById('vendorRegistrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate required fields
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.style.borderColor = '#ef4444';
+                } else {
+                    field.style.borderColor = '#e1e8ed';
+                }
+            });
+            
+            if (isValid) {
+                alert('ส่งใบสมัครเรียบร้อยแล้ว! ทีมงานจะติดต่อกลับภายใน 2-3 วันทำการ');
+                // Here you would normally send the data to your server
+                console.log('Form submitted successfully');
+            } else {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+            }
+        });
+
+        // Initialize
+        updateNavigation();
+    </script>
+</body>
+</html>
+

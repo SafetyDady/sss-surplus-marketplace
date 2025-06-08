@@ -387,7 +387,7 @@ export default function ContactPage() {
           </div>
           
           <div className="vendor-cta">
-            <a href="/vendor-registration" className="vendor-btn">
+            <a href="/vendor-registration.html" className="vendor-btn">
               📝 สมัครเป็น Vendor
             </a>
             <p className="vendor-note">
