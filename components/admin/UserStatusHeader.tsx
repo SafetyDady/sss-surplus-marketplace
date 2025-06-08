@@ -10,7 +10,6 @@ Version: 1.1 | 2025-06-08
 note: 
 - User Status Header Component สำหรับแสดงสถานะผู้ใช้
 - แก้ไข img tags เป็น Next.js Image component
-*/
 - รองรับ Google Profile Picture และ Role indicators
 - มี dropdown menu สำหรับ user actions
 */
