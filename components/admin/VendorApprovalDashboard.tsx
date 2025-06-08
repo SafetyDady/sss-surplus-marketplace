@@ -49,7 +49,8 @@ export default function VendorApprovalDashboard() {
       const snapshot = await getDocs(q)
       const data: VendorUser[] = []
       snapshot.forEach(doc => {
-        data.push({ uid: doc.id, ...(doc.data() as VendorUser) })
+        const userData = doc.data() as Omit<VendorUser, 'uid'>
+        data.push({ uid: doc.id, ...userData })
       })
       setPendingVendors(data)
     } catch (error) {
