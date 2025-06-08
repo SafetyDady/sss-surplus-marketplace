@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from "react"
 import {
   ChevronLeft, Home, Users, Store, Package, Tag,
   ListChecks, Settings, BarChart4
@@ -8,8 +7,9 @@ import {
 
 /*
 File: /components/admin/AdminSidebar.tsx
-Version: 6.0 | 2025-06-07
+Version: 6.1 | 2025-06-08
 note: 
+- ลบ unused useState import
 - ลบ logo และข้อความ "sss SUPPLY" ออก
 - เหลือเฉพาะปุ่ม toggle เท่านั้น
 - ปรับปรุงให้ sidebar ดูเรียบง่ายและไม่งง

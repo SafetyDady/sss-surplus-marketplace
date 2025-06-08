@@ -5,8 +5,9 @@ import { requestVendor } from "../../firebase/createUserInFirestore"
 
 /*
 File: /components/vendor/VendorRequestForm.tsx
-Version: 1.0 | 2025-06-04
+Version: 1.1 | 2025-06-08
 note: ฟอร์มขอสิทธิ์ vendor/partner พร้อมแนบไฟล์, update Firestore, สถานะ pending
+- แก้ไข unused err variable
 */
 
 export default function VendorRequestForm({ uid }: { uid: string }) {
@@ -28,7 +29,7 @@ export default function VendorRequestForm({ uid }: { uid: string }) {
         docs: [docUrl],
       })
       setSuccess(true)
-    } catch (err) {
+    } catch {
       setError("เกิดข้อผิดพลาด กรุณาลองใหม่")
     } finally {
       setLoading(false)
