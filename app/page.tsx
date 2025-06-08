@@ -801,7 +801,7 @@ export default function Home() {
               <a href="/products">สินค้า</a>
               <a href="#categories">หมวดหมู่</a>
               <a href="/about">เกี่ยวกับเรา</a>
-              <a href="#contact">ติดต่อเรา</a>
+              <a href="/contact">ติดต่อเรา</a>
             </div>
           </nav>
 
@@ -821,7 +821,7 @@ export default function Home() {
             <a href="/products">สินค้า</a>
             <a href="#categories">หมวดหมู่</a>
             <a href="/about">เกี่ยวกับเรา</a>
-            <a href="#contact">ติดต่อเรา</a>
+            <a href="/contact">ติดต่อเรา</a>
           </div>
         </div>
       </header>

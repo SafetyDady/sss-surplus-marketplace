@@ -120,6 +120,39 @@ export default function AdminPage() {
               📄 จัดการ About Us
             </a>
           </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">จัดการ Contact Us</h3>
+            <p className="text-gray-600 mb-4">ดูข้อความจากลูกค้า จัดการคำขอ Vendor และข้อมูลติดต่อ</p>
+            <a
+              href="/admin/contact"
+              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors inline-block"
+            >
+              📞 จัดการ Contact Us
+            </a>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">จัดการ Vendor</h3>
+            <p className="text-gray-600 mb-4">อนุมัติคำขอ Vendor ใหม่ และจัดการบัญชี Vendor</p>
+            <a
+              href="/admin/vendors"
+              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition-colors inline-block"
+            >
+              🤝 จัดการ Vendor
+            </a>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">รายงานและสถิติ</h3>
+            <p className="text-gray-600 mb-4">ดูรายงานการขาย สถิติผู้ใช้ และข้อมูลการดำเนินงาน</p>
+            <a
+              href="/admin/reports"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors inline-block"
+            >
+              📊 รายงานและสถิติ
+            </a>
+          </div>
         </div>
 
         {/* Recent Activity */}
