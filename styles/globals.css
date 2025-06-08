@@ -4,6 +4,7 @@
 
 /*
 File: styles/globals.css
-Version: 1.0 | 2025-06-02
+Version: 1.0 | 2025-06-05
 note: Global TailwindCSS stylesheet สำหรับทุกหน้าใน Next.js
+      Set min-height 100% ทุกระดับ เพื่อให้ flex-center ทำงานจริงทุกหน้า
 */
