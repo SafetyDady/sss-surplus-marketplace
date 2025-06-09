@@ -1,4 +1,7 @@
 import '../styles/globals.css'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 /*
 File: /app/layout.tsx
@@ -13,11 +16,19 @@ export const metadata = {
   description: 'Marketplace ระบบ Surplus/สินค้าคงเหลือ | Next.js 14+',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+import { AuthProvider } from '../components/AuthProvider';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="th">
-      <body>
-        {children}
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
