@@ -1,398 +1,126 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { submitContactMessage } from '../../lib/contactService';
 
 export default function ContactPage() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <style jsx>{`
-        .contact-hero {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 4rem 0;
-          text-align: center;
-        }
-        
-        .contact-hero h1 {
-          font-size: 3rem;
-          font-weight: bold;
-          margin-bottom: 1rem;
-        }
-        
-        .contact-hero p {
-          font-size: 1.2rem;
-          opacity: 0.9;
-          max-width: 600px;
-          margin: 0 auto;
-        }
-        
-        .contact-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 4rem 2rem;
-        }
-        
-        .vendor-section {
-          background: white;
-          padding: 3rem 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-          margin-bottom: 4rem;
-          text-align: center;
-        }
-        
-        .vendor-section h2 {
-          font-size: 2.2rem;
-          font-weight: bold;
-          margin-bottom: 1rem;
-          color: #333;
-        }
-        
-        .vendor-description {
-          font-size: 1.1rem;
-          color: #666;
-          line-height: 1.8;
-          max-width: 800px;
-          margin: 0 auto 3rem auto;
-        }
-        
-        .vendor-benefits {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 2rem;
-          margin-bottom: 3rem;
-        }
-        
-        .benefit-item {
-          background: #f8fafc;
-          padding: 1.5rem;
-          border-radius: 12px;
-          text-align: left;
-        }
-        
-        .benefit-icon {
-          font-size: 2rem;
-          margin-bottom: 1rem;
-        }
-        
-        .benefit-content h3 {
-          font-size: 1.2rem;
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-          color: #333;
-        }
-        
-        .benefit-content p {
-          color: #666;
-          line-height: 1.6;
-          font-size: 0.95rem;
-        }
-        
-        .vendor-cta {
-          text-align: center;
-        }
-        
-        .vendor-btn {
-          display: inline-block;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 1rem 2.5rem;
-          border-radius: 12px;
-          text-decoration: none;
-          font-size: 1.1rem;
-          font-weight: 600;
-          transition: transform 0.3s, box-shadow 0.3s;
-          margin-bottom: 1rem;
-        }
-        
-        .vendor-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .vendor-note {
-          color: #666;
-          font-size: 0.9rem;
-          font-style: italic;
-        }
-        
-        .contact-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 4rem;
-          margin-bottom: 4rem;
-        }
-        
-        .contact-form {
-          background: white;
-          padding: 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .contact-form h2 {
-          font-size: 1.8rem;
-          font-weight: bold;
-          margin-bottom: 1.5rem;
-          color: #333;
-        }
-        
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-          display: block;
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-          color: #555;
-        }
-        
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-          width: 100%;
-          padding: 0.75rem;
-          border: 2px solid #e1e8ed;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-          outline: none;
-          border-color: #667eea;
-        }
-        
-        .form-group textarea {
-          resize: vertical;
-          min-height: 120px;
-        }
-        
-        .submit-btn {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 0.75rem 2rem;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: transform 0.3s;
-          width: 100%;
-        }
-        
-        .submit-btn:hover {
-          transform: translateY(-2px);
-        }
-        
-        .contact-info {
-          background: white;
-          padding: 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .contact-info h2 {
-          font-size: 1.8rem;
-          font-weight: bold;
-          margin-bottom: 1.5rem;
-          color: #333;
-        }
-        
-        .info-item {
-          display: flex;
-          align-items: flex-start;
-          margin-bottom: 1.5rem;
-          padding: 1rem;
-          background: #f8fafc;
-          border-radius: 12px;
-        }
-        
-        .info-icon {
-          font-size: 1.5rem;
-          margin-right: 1rem;
-          margin-top: 0.25rem;
-        }
-        
-        .info-content h3 {
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-          color: #333;
-        }
-        
-        .info-content p {
-          color: #666;
-          line-height: 1.6;
-        }
-        
-        .social-links {
-          display: flex;
-          gap: 1rem;
-          margin-top: 2rem;
-        }
-        
-        .social-link {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 50px;
-          height: 50px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border-radius: 12px;
-          text-decoration: none;
-          font-size: 1.2rem;
-          transition: transform 0.3s;
-        }
-        
-        .social-link:hover {
-          transform: translateY(-3px);
-        }
-        
-        .map-section {
-          background: white;
-          padding: 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-          margin-bottom: 4rem;
-        }
-        
-        .map-section h2 {
-          font-size: 1.8rem;
-          font-weight: bold;
-          margin-bottom: 1.5rem;
-          color: #333;
-          text-align: center;
-        }
-        
-        .map-container {
-          width: 100%;
-          height: 400px;
-          border-radius: 12px;
-          overflow: hidden;
-          border: 2px solid #e1e8ed;
-        }
-        
-        .business-hours {
-          background: white;
-          padding: 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .business-hours h2 {
-          font-size: 1.8rem;
-          font-weight: bold;
-          margin-bottom: 1.5rem;
-          color: #333;
-          text-align: center;
-        }
-        
-        .hours-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1.5rem;
-        }
-        
-        .hours-card {
-          background: #f8fafc;
-          padding: 1.5rem;
-          border-radius: 12px;
-          text-align: center;
-        }
-        
-        .hours-card h3 {
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: #333;
-        }
-        
-        .hours-card p {
-          color: #666;
-          line-height: 1.6;
-        }
-        
-        @media (max-width: 768px) {
-          .contact-hero h1 {
-            font-size: 2rem;
-          }
-          
-          .contact-grid {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-          }
-          
-          .contact-container {
-            padding: 2rem 1rem;
-          }
-          
-          .social-links {
-            justify-content: center;
-          }
-        }
-      `}</style>
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-      {/* Hero Section */}
-      <section className="contact-hero">
-        <div className="contact-container">
-          <h1>ติดต่อเรา</h1>
-          <p>พร้อมให้บริการและตอบคำถามทุกเรื่องเกี่ยวกับสินค้า Surplus คุณภาพดี</p>
-        </div>
-      </section>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-      <div className="contact-container">
-        {/* Vendor Section */}
-        <div className="vendor-section">
-          <h2>🤝 สนใจเป็น Vendor กับเรา?</h2>
-          <p className="vendor-description">
-            เข้าร่วมเป็นส่วนหนึ่งของ SSS Supply Marketplace แพลตฟอร์มการซื้อขายสินค้า Surplus ที่ใหญ่ที่สุดในประเทศไทย 
-            เราเปิดโอกาสให้ธุรกิจของคุณเข้าถึงลูกค้าใหม่และเพิ่มยอดขายอย่างมีประสิทธิภาพ
-          </p>
-          
-          <div className="vendor-benefits">
-            <div className="benefit-item">
-              <div className="benefit-icon">🌟</div>
-              <div className="benefit-content">
-                <h3>เข้าถึงลูกค้าใหม่</h3>
-                <p>เชื่อมต่อกับเครือข่ายลูกค้าที่กว้างขวางทั่วประเทศ</p>
-              </div>
-            </div>
-            
-            <div className="benefit-item">
-              <div className="benefit-icon">💰</div>
-              <div className="benefit-content">
-                <h3>เพิ่มยอดขาย</h3>
-                <p>ขายสินค้า Surplus ได้ง่ายขึ้นด้วยแพลตฟอร์มที่มีประสิทธิภาพ</p>
-              </div>
-            </div>
-            
-            <div className="benefit-item">
-              <div className="benefit-icon">🚀</div>
-              <div className="benefit-content">
-                <h3>ง่ายต่อการจัดการ</h3>
-                <p>ระบบจัดการสินค้าและคำสั่งซื้อที่ใช้งานง่าย</p>
-              </div>
-            </div>
-            
-            <div className="benefit-item">
-              <div className="benefit-icon">🛡️</div>
-              <div className="benefit-content">
-                <h3>ความปลอดภัย</h3>
-                <p>ระบบการชำระเงินที่ปลอดภัยและการสนับสนุนลูกค้าตลอด 24 ชั่วโมง</p>
-              </div>
-            </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const result = await submitContactMessage(formData);
+      
+      if (result.success) {
+        setSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        alert('เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง');
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      alert('เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">✅</span>
           </div>
-          
-          <div className="vendor-cta">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">ส่งข้อความเรียบร้อยแล้ว!</h2>
+          <p className="text-gray-600 mb-6">
+            ขอบคุณที่ติดต่อเรา เราจะตอบกลับภายใน 24 ชั่วโมง
+          </p>
+          <button
+            onClick={() => setSubmitted(false)}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+          >
+            ส่งข้อความใหม่
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">ติดต่อเรา</h1>
+          <p className="text-xl md:text-2xl text-blue-100">
+            พร้อมให้บริการและสอบถามข้อมูลเกี่ยวกับสินค้า Surplus คุณภาพดี
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Vendor Section */}
+        <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 mb-12 text-white">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">🤝 สนใจเป็น Vendor กับเรา?</h2>
+            <p className="text-xl mb-8 text-green-100">
+              เข้าร่วมแพลตฟอร์ม SSS Supply และขยายธุรกิจของคุณไปกับเรา
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-2xl mb-2">🌟</div>
+                <h3 className="font-semibold mb-2">เข้าถึงลูกค้าใหม่</h3>
+                <p className="text-sm text-green-100">ขยายฐานลูกค้าผ่านแพลตฟอร์มออนไลน์</p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-2xl mb-2">💰</div>
+                <h3 className="font-semibold mb-2">เพิ่มยอดขาย</h3>
+                <p className="text-sm text-green-100">โอกาสในการขายสินค้าได้มากขึ้น</p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-2xl mb-2">🚀</div>
+                <h3 className="font-semibold mb-2">ง่ายต่อการจัดการ</h3>
+                <p className="text-sm text-green-100">ระบบจัดการที่ใช้งานง่าย</p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-2xl mb-2">🛡️</div>
+                <h3 className="font-semibold mb-2">ความปลอดภัย</h3>
+                <p className="text-sm text-green-100">ระบบการชำระเงินที่ปลอดภัย</p>
+              </div>
+            </div>
+            
             <a href="/vendor-registration" className="vendor-btn">
               📝 สมัครเป็น Vendor
             </a>
-            <p className="vendor-note">
-              * ฟรี! ไม่มีค่าสมัคร เริ่มขายได้ทันทีหลังจากได้รับการอนุมัติ
-            </p>
           </div>
         </div>
 
@@ -400,151 +128,211 @@ export default function ContactPage() {
         <div className="contact-grid">
           {/* Contact Form */}
           <div className="contact-form">
-            <h2>📝 ส่งข้อความถึงเรา</h2>
-            <form>
-              <div className="form-group">
-                <label htmlFor="name">ชื่อ-นามสกุล *</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  placeholder="กรุณากรอกชื่อ-นามสกุล"
-                />
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">📧 ส่งข้อความถึงเรา</h2>
+                <p className="text-gray-600">กรอกข้อมูลด้านล่างเพื่อติดต่อเรา เราจะตอบกลับโดยเร็วที่สุด</p>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="email">อีเมล *</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="example@email.com"
-                />
-              </div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    ชื่อ-นามสกุล *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="กรุณากรอกชื่อ-นามสกุล"
+                  />
+                </div>
 
-              <div className="form-group">
-                <label htmlFor="phone">เบอร์โทรศัพท์</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  placeholder="08X-XXX-XXXX"
-                />
-              </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    อีเมล *
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="example@email.com"
+                  />
+                </div>
 
-              <div className="form-group">
-                <label htmlFor="subject">หัวข้อ *</label>
-                <select id="subject" name="subject" required>
-                  <option value="">เลือกหัวข้อ</option>
-                  <option value="product">สอบถามสินค้า</option>
-                  <option value="order">เรื่องการสั่งซื้อ</option>
-                  <option value="support">ขอความช่วยเหลือ</option>
-                  <option value="partnership">ความร่วมมือทางธุรกิจ</option>
-                  <option value="other">อื่นๆ</option>
-                </select>
-              </div>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    เบอร์โทรศัพท์
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="08X-XXX-XXXX"
+                  />
+                </div>
 
-              <div className="form-group">
-                <label htmlFor="message">ข้อความ *</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  placeholder="กรุณาระบุรายละเอียดที่ต้องการสอบถาม..."
-                ></textarea>
-              </div>
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                    หัวข้อ *
+                  </label>
+                  <select
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">เลือกหัวข้อ</option>
+                    <option value="สินค้า">สอบถามเกี่ยวกับสินค้า</option>
+                    <option value="สั่งซื้อ">สั่งซื้อสินค้า</option>
+                    <option value="สนับสนุน">ขอความช่วยเหลือ</option>
+                    <option value="ธุรกิจ">ความร่วมมือทางธุรกิจ</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
+                  </select>
+                </div>
 
-              <button type="submit" className="submit-btn">
-                📤 ส่งข้อความ
-              </button>
-            </form>
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                    ข้อความ *
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    required
+                    rows={5}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="กรุณาระบุรายละเอียดที่ต้องการสอบถาม..."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      กำลังส่ง...
+                    </span>
+                  ) : (
+                    '📤 ส่งข้อความ'
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
 
-          {/* Contact Information */}
+          {/* Contact Info */}
           <div className="contact-info">
-            <h2>📞 ข้อมูลติดต่อ</h2>
-            
-            <div className="info-item">
-              <div className="info-icon">📱</div>
-              <div className="info-content">
-                <h3>เบอร์โทรศัพท์</h3>
-                <p>
-                  โทร: 02-123-4567<br/>
-                  มือถือ: 089-123-4567
-                </p>
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">📞 ข้อมูลติดต่อ</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <span className="text-blue-600 text-lg">📱</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">เบอร์โทรศัพท์</h3>
+                    <p className="text-gray-600">โทร: 02-123-4567</p>
+                    <p className="text-gray-600">มือถือ: 089-123-4567</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <span className="text-purple-600 text-lg">📧</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">อีเมล</h3>
+                    <p className="text-gray-600">ทั่วไป: info@ssssupply.com</p>
+                    <p className="text-gray-600">ขาย: sales@ssssupply.com</p>
+                    <p className="text-gray-600">สนับสนุน: support@ssssupply.com</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <span className="text-green-600 text-lg">💬</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">ช่องทางออนไลน์</h3>
+                    <p className="text-gray-600">Line ID: @ssssupply</p>
+                    <p className="text-gray-600">Facebook: SSS Supply Thailand</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <span className="text-yellow-600 text-lg">🕒</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">เวลาทำการ</h3>
+                    <p className="text-gray-600">จันทร์ - ศุกร์: 8:00 - 17:00 น.</p>
+                    <p className="text-gray-600">เสาร์: 8:00 - 12:00 น.</p>
+                    <p className="text-gray-600">อาทิตย์: ปิด</p>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="info-item">
-              <div className="info-icon">✉️</div>
-              <div className="info-content">
-                <h3>อีเมล</h3>
-                <p>
-                  ทั่วไป: info@ssssupply.com<br/>
-                  ขาย: sales@ssssupply.com<br/>
-                  สนับสนุน: support@ssssupply.com
-                </p>
-              </div>
-            </div>
-
-            <div className="info-item">
-              <div className="info-icon">💬</div>
-              <div className="info-content">
-                <h3>ช่องทางออนไลน์</h3>
-                <p>
-                  Line ID: @ssssupply<br/>
-                  Facebook: SSS Supply Thailand
-                </p>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="social-links">
-              <a href="https://line.me/ti/p/@ssssupply" className="social-link" target="_blank" rel="noopener noreferrer">
-                💬
-              </a>
-              <a href="https://facebook.com/ssssupply" className="social-link" target="_blank" rel="noopener noreferrer">
-                📘
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Business Hours */}
-        <div className="business-hours">
-          <h2>🕒 เวลาทำการ</h2>
-          <div className="hours-grid">
-            <div className="hours-card">
-              <h3>📞 ติดต่อทั่วไป</h3>
-              <p>
-                จันทร์ - ศุกร์: 08:00 - 18:00<br/>
-                เสาร์: 09:00 - 16:00<br/>
-                อาทิตย์: ปิดทำการ
-              </p>
-            </div>
-
-            <div className="hours-card">
-              <h3>🛒 ฝ่ายขาย</h3>
-              <p>
-                จันทร์ - ศุกร์: 08:30 - 17:30<br/>
-                เสาร์: 09:00 - 15:00<br/>
-                อาทิตย์: ปิดทำการ
-              </p>
-            </div>
-
-            <div className="hours-card">
-              <h3>🔧 ฝ่ายสนับสนุน</h3>
-              <p>
-                จันทร์ - ศุกร์: 09:00 - 17:00<br/>
-                เสาร์: 10:00 - 14:00<br/>
-                อาทิตย์: ปิดทำการ
-              </p>
             </div>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .contact-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+          .contact-grid {
+            grid-template-columns: 2fr 1fr;
+          }
+        }
+
+        .vendor-btn {
+          display: inline-block;
+          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+          color: #1e40af;
+          padding: 1rem 2rem;
+          border-radius: 0.75rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .vendor-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+      `}</style>
     </div>
   );
 }
