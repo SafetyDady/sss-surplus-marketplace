@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { submitContactMessage } from '../../lib/contactService';
+import React, { useState } from 'react';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +12,7 @@ export default function ContactPage() {
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,9 +25,16 @@ export default function ContactPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
     try {
+      console.log('Submitting contact form...', formData);
+      
+      // Import Firebase functions dynamically
+      const { submitContactMessage } = await import('../../lib/contactService');
       const result = await submitContactMessage(formData);
+      
+      console.log('Submit result:', result);
       
       if (result.success) {
         setSubmitted(true);
@@ -38,12 +45,15 @@ export default function ContactPage() {
           subject: '',
           message: ''
         });
+        alert('ส่งข้อความเรียบร้อยแล้ว! เราจะติดต่อกลับโดยเร็วที่สุด');
       } else {
-        alert('เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง');
+        setError(result.error || 'เกิดข้อผิดพลาดในการส่งข้อความ');
+        alert('เกิดข้อผิดพลาด: ' + (result.error || 'ไม่สามารถส่งข้อความได้'));
       }
     } catch (error) {
       console.error('Error submitting contact form:', error);
-      alert('เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง');
+      setError(error.message);
+      alert('เกิดข้อผิดพลาด: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -51,288 +61,228 @@ export default function ContactPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">✅</span>
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-blue-800 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
+          <div className="text-center">
+            <div className="text-green-500 text-6xl mb-4">✅</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">ส่งข้อความสำเร็จ!</h2>
+            <p className="text-gray-600 mb-6">
+              ขอบคุณที่ติดต่อเรา เราจะตอบกลับโดยเร็วที่สุด
+            </p>
+            <button
+              onClick={() => setSubmitted(false)}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              ส่งข้อความใหม่
+            </button>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">ส่งข้อความเรียบร้อยแล้ว!</h2>
-          <p className="text-gray-600 mb-6">
-            ขอบคุณที่ติดต่อเรา เราจะตอบกลับภายใน 24 ชั่วโมง
-          </p>
-          <button
-            onClick={() => setSubmitted(false)}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
-          >
-            ส่งข้อความใหม่
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-blue-800">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">ติดต่อเรา</h1>
-          <p className="text-xl md:text-2xl text-blue-100">
-            พร้อมให้บริการและสอบถามข้อมูลเกี่ยวกับสินค้า Surplus คุณภาพดี
-          </p>
-        </div>
+      <div className="text-center py-16 text-white">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">ติดต่อเรา</h1>
+        <p className="text-xl opacity-90">
+          พร้อมให้บริการและตอบคำถามทุกเรื่องเกี่ยวกับสินค้า Surplus คุณภาพดี
+        </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Vendor Section */}
-        <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 mb-12 text-white">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">🤝 สนใจเป็น Vendor กับเรา?</h2>
-            <p className="text-xl mb-8 text-green-100">
-              เข้าร่วมแพลตฟอร์ม SSS Supply และขยายธุรกิจของคุณไปกับเรา
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <div className="text-2xl mb-2">🌟</div>
-                <h3 className="font-semibold mb-2">เข้าถึงลูกค้าใหม่</h3>
-                <p className="text-sm text-green-100">ขยายฐานลูกค้าผ่านแพลตฟอร์มออนไลน์</p>
-              </div>
+      <div className="container mx-auto px-4 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Contact Form */}
+            <div className="bg-white rounded-xl shadow-xl p-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span className="text-2xl mr-3">📧</span>
+                ส่งข้อความถึงเรา
+              </h2>
               
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <div className="text-2xl mb-2">💰</div>
-                <h3 className="font-semibold mb-2">เพิ่มยอดขาย</h3>
-                <p className="text-sm text-green-100">โอกาสในการขายสินค้าได้มากขึ้น</p>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <div className="text-2xl mb-2">🚀</div>
-                <h3 className="font-semibold mb-2">ง่ายต่อการจัดการ</h3>
-                <p className="text-sm text-green-100">ระบบจัดการที่ใช้งานง่าย</p>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <div className="text-2xl mb-2">🛡️</div>
-                <h3 className="font-semibold mb-2">ความปลอดภัย</h3>
-                <p className="text-sm text-green-100">ระบบการชำระเงินที่ปลอดภัย</p>
-              </div>
-            </div>
-            
-            <a href="/vendor-registration" className="vendor-btn">
-              📝 สมัครเป็น Vendor
-            </a>
-          </div>
-        </div>
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                  {error}
+                </div>
+              )}
 
-        {/* Contact Form & Info Grid */}
-        <div className="contact-grid">
-          {/* Contact Form */}
-          <div className="contact-form">
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">📧 ส่งข้อความถึงเรา</h2>
-                <p className="text-gray-600">กรอกข้อมูลด้านล่างเพื่อติดต่อเรา เราจะตอบกลับโดยเร็วที่สุด</p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-gray-700 font-medium mb-2">
                     ชื่อ-นามสกุล *
                   </label>
                   <input
                     type="text"
-                    id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="กรุณากรอกชื่อ-นามสกุล"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-gray-700 font-medium mb-2">
                     อีเมล *
                   </label>
                   <input
                     type="email"
-                    id="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="example@email.com"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-gray-700 font-medium mb-2">
                     เบอร์โทรศัพท์
                   </label>
                   <input
                     type="tel"
-                    id="phone"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="08X-XXX-XXXX"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-gray-700 font-medium mb-2">
                     หัวข้อ *
                   </label>
                   <select
-                    id="subject"
                     name="subject"
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="">เลือกหัวข้อ</option>
-                    <option value="สินค้า">สอบถามเกี่ยวกับสินค้า</option>
-                    <option value="สั่งซื้อ">สั่งซื้อสินค้า</option>
-                    <option value="สนับสนุน">ขอความช่วยเหลือ</option>
-                    <option value="ธุรกิจ">ความร่วมมือทางธุรกิจ</option>
+                    <option value="สอบถามเกี่ยวกับสินค้า">สอบถามเกี่ยวกับสินค้า</option>
+                    <option value="สั่งซื้อสินค้า">สั่งซื้อสินค้า</option>
+                    <option value="สนับสนุนและบริการ">สนับสนุนและบริการ</option>
+                    <option value="ความร่วมมือทางธุรกิจ">ความร่วมมือทางธุรกิจ</option>
                     <option value="อื่นๆ">อื่นๆ</option>
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-gray-700 font-medium mb-2">
                     ข้อความ *
                   </label>
                   <textarea
-                    id="message"
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
                     required
-                    rows={5}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows="5"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="กรุณาระบุรายละเอียดที่ต้องการสอบถาม..."
-                  />
+                  ></textarea>
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? (
-                    <span className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      กำลังส่ง...
-                    </span>
-                  ) : (
-                    '📤 ส่งข้อความ'
-                  )}
+                  {loading ? 'กำลังส่ง...' : 'ส่งข้อความ'}
                 </button>
               </form>
             </div>
-          </div>
 
-          {/* Contact Info */}
-          <div className="contact-info">
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">📞 ข้อมูลติดต่อ</h2>
-              
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <span className="text-blue-600 text-lg">📱</span>
+            {/* Contact Info */}
+            <div className="space-y-6">
+              {/* Contact Details */}
+              <div className="bg-white rounded-xl shadow-xl p-8">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                  <span className="text-2xl mr-3">📞</span>
+                  ข้อมูลติดต่อ
+                </h2>
+
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-purple-100 p-3 rounded-lg">
+                      <span className="text-purple-600 text-xl">📱</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">เบอร์โทรศัพท์</h3>
+                      <p className="text-gray-600">โทร: 02-123-4567</p>
+                      <p className="text-gray-600">มือถือ: 089-123-4567</p>
                     </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">เบอร์โทรศัพท์</h3>
-                    <p className="text-gray-600">โทร: 02-123-4567</p>
-                    <p className="text-gray-600">มือถือ: 089-123-4567</p>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-purple-100 p-3 rounded-lg">
+                      <span className="text-purple-600 text-xl">✉️</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">อีเมล</h3>
+                      <p className="text-gray-600">ทั่วไป: info@ssssupply.com</p>
+                      <p className="text-gray-600">ขาย: sales@ssssupply.com</p>
+                      <p className="text-gray-600">สนับสนุน: support@ssssupply.com</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-purple-100 p-3 rounded-lg">
+                      <span className="text-purple-600 text-xl">💬</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">ช่องทางออนไลน์</h3>
+                      <p className="text-gray-600">Line ID: @ssssupply</p>
+                      <p className="text-gray-600">Facebook: SSS Supply Thailand</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Vendor Section */}
+              <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-xl p-8 text-white">
+                <h2 className="text-2xl font-bold mb-4 flex items-center">
+                  <span className="text-2xl mr-3">🤝</span>
+                  สนใจเป็น Vendor กับเรา?
+                </h2>
+                <p className="mb-6 opacity-90">
+                  เข้าร่วมเป็นพาร์ทเนอร์ทางธุรกิจและขายสินค้า Surplus คุณภาพดีผ่านแพลตฟอร์มของเรา
+                </p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">🌟</div>
+                    <p className="text-sm">เข้าถึงลูกค้าใหม่</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">💰</div>
+                    <p className="text-sm">เพิ่มยอดขาย</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">🚀</div>
+                    <p className="text-sm">ง่ายต่อการจัดการ</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">🛡️</div>
+                    <p className="text-sm">ความปลอดภัย</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <span className="text-purple-600 text-lg">📧</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">อีเมล</h3>
-                    <p className="text-gray-600">ทั่วไป: info@ssssupply.com</p>
-                    <p className="text-gray-600">ขาย: sales@ssssupply.com</p>
-                    <p className="text-gray-600">สนับสนุน: support@ssssupply.com</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <span className="text-green-600 text-lg">💬</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">ช่องทางออนไลน์</h3>
-                    <p className="text-gray-600">Line ID: @ssssupply</p>
-                    <p className="text-gray-600">Facebook: SSS Supply Thailand</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                      <span className="text-yellow-600 text-lg">🕒</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">เวลาทำการ</h3>
-                    <p className="text-gray-600">จันทร์ - ศุกร์: 8:00 - 17:00 น.</p>
-                    <p className="text-gray-600">เสาร์: 8:00 - 12:00 น.</p>
-                    <p className="text-gray-600">อาทิตย์: ปิด</p>
-                  </div>
-                </div>
+                <a 
+                  href="/vendor-registration" 
+                  className="inline-block w-full text-center bg-white text-green-600 py-3 px-6 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+                >
+                  📝 สมัครเป็น Vendor
+                </a>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .contact-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 2rem;
-        }
-
-        @media (min-width: 1024px) {
-          .contact-grid {
-            grid-template-columns: 2fr 1fr;
-          }
-        }
-
-        .vendor-btn {
-          display: inline-block;
-          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-          color: #1e40af;
-          padding: 1rem 2rem;
-          border-radius: 0.75rem;
-          font-weight: 600;
-          text-decoration: none;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .vendor-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        }
-      `}</style>
     </div>
   );
 }
