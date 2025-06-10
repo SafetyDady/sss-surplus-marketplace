@@ -7,31 +7,60 @@ export default function SuperAdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
-    // Decode token to get user info (simplified)
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (payload.role !== 'super_admin') {
+      // Check authentication
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
         router.push('/admin/login');
         return;
       }
-      setUser(payload);
-    } catch (error) {
-      console.error('Invalid token:', error);
-      router.push('/admin/login');
-      return;
-    }
 
-    setLoading(false);
+      // Decode token to get user info (simplified)
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.role !== 'super_admin') {
+          router.push('/admin/login');
+          return;
+        }
+        setUser({
+          name: payload.name || 'System Administrator',
+          email: payload.email || 'sanchai5651@gmail.com',
+          role: payload.role
+        });
+      } catch (tokenError) {
+        console.error('Invalid token:', tokenError);
+        setError('Invalid authentication token');
+        router.push('/admin/login');
+        return;
+      }
+
+      setLoading(false);
+    } catch (generalError) {
+      console.error('Dashboard initialization error:', generalError);
+      setError('Failed to initialize dashboard');
+      setLoading(false);
+    }
   }, [router]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="text-red-500 text-xl mb-4">⚠️ Error</div>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => router.push('/admin/login')}
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          >
+            กลับไปหน้า Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
