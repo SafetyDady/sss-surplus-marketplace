@@ -1,28 +1,50 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import UserStatusHeader from './UserStatusHeader'
 
 /*
 File: /components/admin/AdminHeader.tsx
-Version: 5.0 | 2025-06-07
+Version: 5.1 | 2025-06-10
 note: 
 - ปรับปรุง AdminHeader ให้รวม UserStatusHeader
 - เพิ่ม responsive design และ modern styling
 - รองรับ user authentication และ role management
+- ดึงข้อมูล user จาก JWT token แทน mock data
 */
 
 export default function AdminHeader() {
-  // Mock user data - ในการใช้งานจริงจะดึงจาก Firebase Auth
-  const mockUser = {
-    name: 'Admin User',
-    email: 'admin@sss-supply.com',
-    photoURL: '', // จะใช้ Google Profile Picture
-    role: 'admin' as const
-  }
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // ดึงข้อมูล user จาก JWT token
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        setUser({
+          name: payload.name || 'System Administrator',
+          email: payload.email || 'sanchai5651@gmail.com',
+          photoURL: '',
+          role: payload.role === 'super_admin' ? 'System Admin' : payload.role
+        })
+      } catch (error) {
+        console.error('Error decoding token:', error)
+        // Fallback to mock data
+        setUser({
+          name: 'Admin User',
+          email: 'admin@sss-supply.com',
+          photoURL: '',
+          role: 'admin'
+        })
+      }
+    }
+  }, [])
 
   const handleLogout = () => {
     // Handle logout logic
-    console.log('Logout clicked')
+    localStorage.removeItem('admin_token')
+    window.location.href = '/admin/login'
   }
 
   const handleProfileClick = () => {
@@ -58,12 +80,14 @@ export default function AdminHeader() {
         </div>
 
         {/* User Status */}
-        <UserStatusHeader
-          user={mockUser}
-          onLogout={handleLogout}
-          onProfileClick={handleProfileClick}
-          onSettingsClick={handleSettingsClick}
-        />
+        {user && (
+          <UserStatusHeader
+            user={user}
+            onLogout={handleLogout}
+            onProfileClick={handleProfileClick}
+            onSettingsClick={handleSettingsClick}
+          />
+        )}
       </div>
     </header>
   )

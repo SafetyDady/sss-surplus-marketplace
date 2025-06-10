@@ -51,7 +51,7 @@ export default function SuperAdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Super Admin Dashboard</h1>
+              <h1 className="text-2xl font-bold text-gray-900">System Admin Dashboard</h1>
               <p className="text-sm text-gray-600">ระบบจัดการสำหรับผู้ดูแลระบบสูงสุด</p>
             </div>
             <div className="flex items-center space-x-4">
@@ -71,7 +71,7 @@ export default function SuperAdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white mb-8">
-          <h2 className="text-xl font-bold mb-2">ยินดีต้อนรับ Super Admin!</h2>
+          <h2 className="text-xl font-bold mb-2">ยินดีต้อนรับ System Admin!</h2>
           <p className="text-purple-100">คุณมีสิทธิ์เข้าถึงและจัดการระบบทั้งหมด</p>
         </div>
 
