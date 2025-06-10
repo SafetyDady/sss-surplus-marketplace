@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { auth, googleProvider, facebookProvider, db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { 
   createUserWithEmailAndPassword, 
   signInWithPopup, 
@@ -178,20 +178,8 @@ export default function RegisterPage() {
     setIsLoading(true);
     
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      
-      // Save user data to Firestore
-      await createUserInFirestore(user.uid, {
-        email: user.email,
-        firstName: user.displayName?.split(' ')[0] || '',
-        lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-        phone: user.phoneNumber || '',
-        photoURL: user.photoURL,
-        registrationMethod: 'google'
-      });
-      
-      setSuccessMessage('สมัครสมาชิกสำเร็จ! กำลังนำคุณไปยังหน้าหลัก...');
+      // Google sign-in functionality will be implemented later
+      alert('Google sign-in will be implemented in the future');
       
     } catch (error) {
       console.error('Google sign up error:', error);
@@ -208,20 +196,8 @@ export default function RegisterPage() {
     setIsLoading(true);
     
     try {
-      const result = await signInWithPopup(auth, facebookProvider);
-      const user = result.user;
-      
-      // Save user data to Firestore
-      await createUserInFirestore(user.uid, {
-        email: user.email,
-        firstName: user.displayName?.split(' ')[0] || '',
-        lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-        phone: user.phoneNumber || '',
-        photoURL: user.photoURL,
-        registrationMethod: 'facebook'
-      });
-      
-      setSuccessMessage('สมัครสมาชิกสำเร็จ! กำลังนำคุณไปยังหน้าหลัก...');
+      // Facebook sign-in functionality will be implemented later
+      alert('Facebook sign-in will be implemented in the future');
       
     } catch (error) {
       console.error('Facebook sign up error:', error);
