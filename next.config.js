@@ -12,8 +12,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Removed deprecated appDir from experimental (Next.js 14+ has app directory by default)
   experimental: {
-    appDir: true
+    // appDir: true // Removed - deprecated in Next.js 14+
   },
   trailingSlash: false,
 }
