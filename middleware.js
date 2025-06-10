@@ -1,8 +1,8 @@
-// middleware.js - Simple middleware without dependencies
+// middleware.js - Allow all requests for now
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
-  // Allow all requests for now
+  // Allow all requests to pass through
   return NextResponse.next();
 }
 
