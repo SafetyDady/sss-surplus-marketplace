@@ -1,0 +1,12 @@
+[
+  {
+    "origin": [
+      "http://localhost:3000",
+      "https://sss-surplus-marketplace.web.app",
+      "https://sss-surplus-marketplace.firebaseapp.com"
+    ],
+    "method": ["GET", "PUT", "POST", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization"]
+  }
+]

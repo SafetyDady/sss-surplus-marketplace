@@ -1,0 +1,26 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Vendor documents
+    match /vendor-documents/{vendorId}/{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Contact attachments
+    match /contact-attachments/{messageId}/{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Admin access to all files
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Allow read/write access for testing (remove in production)
+    match /{allPaths=**} {
+      allow read, write: if true; // TEMPORARY - for testing only
+    }
+  }
+}
+
