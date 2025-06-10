@@ -63,8 +63,19 @@ export default function Home() {
       }
     };
 
+    // Super Admin Detection
+    function checkSuperAdminMode() {
+      const superAdminEnabled = process.env.NEXT_PUBLIC_SUPER_ADMIN_ENABLED === 'true';
+      const superAdminLink = document.getElementById('superAdminLink');
+      
+      if (superAdminEnabled && superAdminLink) {
+        superAdminLink.style.display = 'block';
+      }
+    }
+
     // Initialize
     updateArrowStates();
+    checkSuperAdminMode();
     
     const scrollContainer = document.getElementById('categoriesScroll');
     scrollContainer?.addEventListener('scroll', updateArrowStates);
@@ -198,6 +209,77 @@ export default function Home() {
         
         .nav-links a:hover {
           opacity: 0.8;
+        }
+        
+        .login-dropdown {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .login-btn {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+        
+        .login-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .login-dropdown-menu {
+          display: none;
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+          min-width: 180px;
+          z-index: 1000;
+          margin-top: 0.5rem;
+          overflow: hidden;
+        }
+        
+        .login-dropdown:hover .login-dropdown-menu {
+          display: block;
+          animation: fadeInDown 0.3s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .login-dropdown-menu a {
+          display: block;
+          color: #333;
+          text-decoration: none;
+          padding: 0.75rem 1rem;
+          border-bottom: 1px solid #f0f0f0;
+          transition: background 0.3s;
+          font-weight: 500;
+        }
+        
+        .login-dropdown-menu a:hover {
+          background: #f8fafc;
+          color: #667eea;
+        }
+        
+        .login-dropdown-menu a:last-child {
+          border-bottom: none;
         }
         
         .header-actions {
@@ -802,6 +884,17 @@ export default function Home() {
               <a href="#categories">หมวดหมู่</a>
               <a href="/about">เกี่ยวกับเรา</a>
               <a href="/contact">ติดต่อเรา</a>
+              
+              {/* Login Dropdown */}
+              <div className="login-dropdown">
+                <button className="login-btn">เข้าสู่ระบบ</button>
+                <div className="login-dropdown-menu">
+                  <a href="/auth/signin">สำหรับลูกค้า</a>
+                  <a href="/vendor/login">สำหรับ Vendor</a>
+                  <a href="/admin/login">สำหรับ Admin</a>
+                  <a href="/admin/super" id="superAdminLink" style={{display: 'none'}}>🔥 Super Admin</a>
+                </div>
+              </div>
             </div>
           </nav>
 
