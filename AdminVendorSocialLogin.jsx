@@ -1,7 +1,5 @@
 // AdminVendorSocialLogin.jsx - Enhanced Social Login for Admin/Vendor
 import React, { useState, useEffect } from 'react';
-import { FaGoogle, FaFacebook, FaUser, FaUserTie, FaStore, FaCrown } from 'react-icons/fa';
-import { SiLine } from 'react-icons/si';
 
 const AdminVendorSocialLogin = () => {
   const [loginType, setLoginType] = useState('admin'); // 'admin' or 'vendor' or 'super_admin'
@@ -68,21 +66,21 @@ const AdminVendorSocialLogin = () => {
   const getLoginConfig = () => {
     const configs = {
       admin: {
-        icon: <FaUserTie className="text-blue-600" />,
+        icon: '👨‍💼',
         title: 'Admin Portal',
         subtitle: 'ระบบจัดการสำหรับผู้ดูแลระบบ',
         color: 'blue',
         gradient: 'from-blue-600 to-blue-700'
       },
       vendor: {
-        icon: <FaStore className="text-green-600" />,
+        icon: '🏪',
         title: 'Vendor Portal', 
         subtitle: 'ระบบจัดการสำหรับผู้ขาย',
         color: 'green',
         gradient: 'from-green-600 to-green-700'
       },
       super_admin: {
-        icon: <FaCrown className="text-purple-600" />,
+        icon: '👑',
         title: 'Super Admin Portal',
         subtitle: 'ระบบจัดการสำหรับผู้ดูแลระบบสูงสุด',
         color: 'purple',
@@ -122,7 +120,7 @@ const AdminVendorSocialLogin = () => {
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
-            <FaUserTie className="inline mr-1" />
+            <span className="inline mr-1">👨‍💼</span>
             Admin
           </button>
           <button
@@ -133,7 +131,7 @@ const AdminVendorSocialLogin = () => {
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
-            <FaStore className="inline mr-1" />
+            <span className="inline mr-1">🏪</span>
             Vendor
           </button>
           <button
@@ -144,7 +142,7 @@ const AdminVendorSocialLogin = () => {
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
-            <FaCrown className="inline mr-1" />
+            <span className="inline mr-1">👑</span>
             Super
           </button>
         </div>
@@ -228,7 +226,7 @@ const AdminVendorSocialLogin = () => {
                 disabled={loading}
                 className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 group"
               >
-                <FaGoogle className="text-red-500 mr-3 group-hover:scale-110 transition-transform" />
+                <span className="text-red-500 mr-3 group-hover:scale-110 transition-transform">🔍</span>
                 <span className="text-gray-700">เข้าสู่ระบบด้วย Google</span>
               </button>
 
@@ -237,7 +235,7 @@ const AdminVendorSocialLogin = () => {
                 disabled={loading}
                 className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 group"
               >
-                <FaFacebook className="text-blue-600 mr-3 group-hover:scale-110 transition-transform" />
+                <span className="text-blue-600 mr-3 group-hover:scale-110 transition-transform">📘</span>
                 <span className="text-gray-700">เข้าสู่ระบบด้วย Facebook</span>
               </button>
 
@@ -246,7 +244,7 @@ const AdminVendorSocialLogin = () => {
                 disabled={loading}
                 className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 group"
               >
-                <SiLine className="text-green-500 mr-3 group-hover:scale-110 transition-transform" />
+                <span className="text-green-500 mr-3 group-hover:scale-110 transition-transform">💬</span>
                 <span className="text-gray-700">เข้าสู่ระบบด้วย Line</span>
               </button>
             </div>

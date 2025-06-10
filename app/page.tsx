@@ -101,6 +101,80 @@ export default function Home() {
       });
     });
 
+    // Login Dropdown Handler
+    function initLoginDropdown() {
+      const loginDropdown = document.querySelector('.login-dropdown');
+      const loginBtn = document.querySelector('.login-btn');
+      const loginMenu = document.querySelector('.login-dropdown-menu');
+      
+      if (!loginDropdown || !loginBtn || !loginMenu) {
+        console.log('Login dropdown elements not found, retrying...');
+        setTimeout(initLoginDropdown, 500);
+        return;
+      }
+      
+      let isOpen = false;
+      let hoverTimeout;
+      
+      // Click handler for button
+      loginBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        isOpen = !isOpen;
+        
+        if (isOpen) {
+          loginMenu.style.display = 'block';
+          loginMenu.classList.add('show');
+        } else {
+          loginMenu.classList.remove('show');
+          setTimeout(() => {
+            if (!loginMenu.classList.contains('show')) {
+              loginMenu.style.display = 'none';
+            }
+          }, 200);
+        }
+      });
+      
+      // Hover handlers
+      loginDropdown.addEventListener('mouseenter', function() {
+        clearTimeout(hoverTimeout);
+        isOpen = true;
+        loginMenu.style.display = 'block';
+        loginMenu.classList.add('show');
+      });
+      
+      loginDropdown.addEventListener('mouseleave', function() {
+        hoverTimeout = setTimeout(() => {
+          isOpen = false;
+          loginMenu.classList.remove('show');
+          setTimeout(() => {
+            if (!loginMenu.classList.contains('show')) {
+              loginMenu.style.display = 'none';
+            }
+          }, 200);
+        }, 100);
+      });
+      
+      // Close when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!loginDropdown.contains(e.target)) {
+          isOpen = false;
+          loginMenu.classList.remove('show');
+          setTimeout(() => {
+            if (!loginMenu.classList.contains('show')) {
+              loginMenu.style.display = 'none';
+            }
+          }, 200);
+        }
+      });
+      
+      console.log('Login dropdown initialized successfully!');
+    }
+    
+    // Initialize login dropdown
+    initLoginDropdown();
+
     document.addEventListener('click', function(e) {
       const hamburger = document.querySelector('.hamburger');
       const mobileMenu = document.getElementById('mobileMenu');
@@ -245,11 +319,21 @@ export default function Home() {
           z-index: 1000;
           margin-top: 0.5rem;
           overflow: hidden;
+          opacity: 0;
+          transform: translateY(-10px);
+          transition: all 0.3s ease;
+        }
+        
+        .login-dropdown-menu.show {
+          display: block;
+          opacity: 1;
+          transform: translateY(0);
         }
         
         .login-dropdown:hover .login-dropdown-menu {
           display: block;
-          animation: fadeInDown 0.3s ease-out;
+          opacity: 1;
+          transform: translateY(0);
         }
         
         @keyframes fadeInDown {
