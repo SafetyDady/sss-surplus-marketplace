@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSS Supply Marketplace - ตลาดสินค้า Surplus คุณภาพดี</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .logo-icon {
+            background: white;
+            color: #667eea;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .login-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .login-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .login-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            z-index: 1000;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .login-dropdown:hover .login-dropdown-menu {
+            display: block;
+            animation: fadeInDown 0.3s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-dropdown-menu a {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        
+        .login-dropdown-menu a:hover {
+            background: #f8fafc;
+            color: #667eea;
+        }
+        
+        .login-dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .hero-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: none;
+        }
+        
+        .stat-item {
+            display: none;
+        }
+        
+        .categories {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+        }
+        
+        .categories-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .categories h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .categories-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .nav-arrow {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: absolute;
+            z-index: 10;
+        }
+        
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .nav-arrow.left {
+            left: -20px;
+        }
+        
+        .nav-arrow.right {
+            right: -20px;
+        }
+        
+        .categories-scroll {
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+            margin: 0 30px;
+            flex: 1;
+        }
+        
+        .categories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .categories-grid {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            min-width: max-content;
+        }
+        
+        .category-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            backdrop-filter: blur(10px);
+            min-width: 70px;
+            height: 60px;
+            text-align: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .category-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.1rem;
+        }
+        
+        .products {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .products-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .products-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .products-header h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .products-header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f0f2f5, #e1e8ed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #667eea;
+            position: relative;
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: #ff6b6b;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .product-content {
+            padding: 1.5rem;
+        }
+        
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .product-price {
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-price .current {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .product-price .original {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
+        
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            flex: 1;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section ul li a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section ul li a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #4a5568;
+            padding-top: 1rem;
+            text-align: center;
+            color: #a0aec0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 1rem;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .nav-links a {
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+            
+            .login-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+            
+            .login-dropdown-menu {
+                min-width: 160px;
+                font-size: 0.85rem;
+            }
+            
+            .nav-arrow {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            
+            .nav-arrow.left {
+                left: -16px;
+            }
+            
+            .nav-arrow.right {
+                right: -16px;
+            }
+            
+            .categories-scroll {
+                margin: 0 20px;
+            }
+            
+            .category-btn {
+                min-width: 60px;
+                height: 50px;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.6rem;
+            }
+            
+            .category-icon {
+                font-size: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .products-header h2 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0 0.75rem;
+            }
+            
+            .logo {
+                font-size: 1rem;
+            }
+            
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .nav-links {
+                gap: 0.75rem;
+            }
+            
+            .nav-links a {
+                font-size: 0.8rem;
+            }
+            
+            .login-btn {
+                padding: 0.35rem 0.7rem;
+                font-size: 0.8rem;
+            }
+            
+            .login-dropdown-menu {
+                min-width: 140px;
+                font-size: 0.8rem;
+            }
+            
+            .nav-arrow {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+            }
+            
+            .nav-arrow.left {
+                left: -14px;
+            }
+            
+            .nav-arrow.right {
+                right: -14px;
+            }
+            
+            .categories-scroll {
+                margin: 0 16px;
+            }
+            
+            .category-btn {
+                min-width: 55px;
+                height: 45px;
+                font-size: 0.65rem;
+                padding: 0.3rem 0.5rem;
+            }
+            
+            .category-icon {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <span>MTP Surplus</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="nav">
+                <div class="nav-links">
+                    <a href="/about">เกี่ยวกับ</a>
+                    <a href="/contact">ติดต่อ</a>
+                    <div class="login-dropdown">
+                        <button class="login-btn">Login ▼</button>
+                        <div class="login-dropdown-menu">
+                            <a href="/auth/signin">สำหรับลูกค้า</a>
+                            <a href="/vendor-registration">สำหรับ Vendor</a>
+                            <a href="/admin/login">สำหรับ Admin</a>
+                            <a href="/admin/super" id="superAdminLink" style="display: none; color: #ff6b6b; font-weight: bold;">🔥 Super Admin</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1>ตลาดสินค้า Surplus คุณภาพดี</h1>
+            <p>ค้นหาสินค้าเหลือใช้จากโรงงาน คุณภาพดี ราคาประหยัด จากผู้ขายที่เชื่อถือได้ทั่วประเทศ</p>
+
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="ค้นหาสินค้าที่ต้องการ..." id="searchInput" />
+                <button class="search-button" onclick="handleSearch()">ค้นหา</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Navigation -->
+    <section class="categories" id="categories">
+        <div class="categories-container">
+            <h3>หมวดหมู่สินค้ายอดนิยม</h3>
+            <div class="categories-wrapper">
+                <!-- Left Arrow -->
+                <div class="nav-arrow left" onclick="scrollCategories('left')">‹</div>
+                
+                <!-- Categories Scroll Container -->
+                <div class="categories-scroll" id="categoriesScroll">
+                    <div class="categories-grid">
+                        <button class="category-btn">
+                            <span class="category-icon">💻</span>
+                            IT
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">⚡</span>
+                            ไฟฟ้า
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">👕</span>
+                            แฟชั่น
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">🏠</span>
+                            บ้าน
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">⚽</span>
+                            กีฬา
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">📚</span>
+                            หนังสือ
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">🧸</span>
+                            ของเล่น
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">💎</span>
+                            เครื่องประดับ
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">🍕</span>
+                            อาหาร
+                        </button>
+                        <button class="category-btn">
+                            <span class="category-icon">🚗</span>
+                            รถยนต์
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Right Arrow -->
+                <div class="nav-arrow right" onclick="scrollCategories('right')">›</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="products">
+        <div class="products-container">
+            <div class="products-header">
+                <h2>สินค้าแนะนำ</h2>
+                <p>สินค้า Surplus คุณภาพดี ราคาพิเศษ จากผู้ขายที่เชื่อถือได้</p>
+            </div>
+
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-badge">-34%</div>
+                        📱
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">iPhone 13 Pro Max 256GB สีน้ำเงิน</h3>
+                        <div class="product-price">
+                            <span class="current">฿28,500</span>
+                            <span class="original">฿42,900</span>
+                        </div>
+                        <p class="product-description">iPhone 13 Pro Max สภาพใหม่ 95% ใช้งานเพียง 3 เดือน มีกล่องครบ</p>
+                        <div class="product-actions">
+                            <button class="btn-primary">ดูรายละเอียด</button>
+                            <button class="btn-secondary" onclick="requireLogin()">🛒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-badge">-23%</div>
+                        💻
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">MacBook Air M2 8GB/256GB สีเงิน</h3>
+                        <div class="product-price">
+                            <span class="current">฿32,900</span>
+                            <span class="original">฿42,900</span>
+                        </div>
+                        <p class="product-description">MacBook Air M2 สภาพใหม่ 98% ยังอยู่ในประกัน Apple Care</p>
+                        <div class="product-actions">
+                            <button class="btn-primary">ดูรายละเอียด</button>
+                            <button class="btn-secondary" onclick="requireLogin()">🛒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-badge">-47%</div>
+                        🏠
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">เครื่องซักผ้า Samsung 8kg</h3>
+                        <div class="product-price">
+                            <span class="current">฿8,500</span>
+                            <span class="original">฿15,900</span>
+                        </div>
+                        <p class="product-description">เครื่องซักผ้า Samsung ใช้งาน 1 ปี สภาพดี ทำงานปกติ</p>
+                        <div class="product-actions">
+                            <button class="btn-primary">ดูรายละเอียด</button>
+                            <button class="btn-secondary" onclick="requireLogin()">🛒</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn-primary" style="padding: 1rem 2rem;">ดูสินค้าทั้งหมด</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>เกี่ยวกับเรา</h4>
+                    <ul>
+                        <li><a href="/about">เกี่ยวกับ SSS Supply</a></li>
+                        <li><a href="/how-it-works">วิธีการทำงาน</a></li>
+                        <li><a href="/careers">ร่วมงานกับเรา</a></li>
+                        <li><a href="/press">ข่าวสาร</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>สำหรับผู้ขาย</h4>
+                    <ul>
+                        <li><a href="/vendor-registration">สมัครเป็นผู้ขาย</a></li>
+                        <li><a href="/vendor-guide">คู่มือผู้ขาย</a></li>
+                        <li><a href="/vendor-support">ช่วยเหลือผู้ขาย</a></li>
+                        <li><a href="/vendor-login">เข้าสู่ระบบผู้ขาย</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>ช่วยเหลือ</h4>
+                    <ul>
+                        <li><a href="/help">ศูนย์ช่วยเหลือ</a></li>
+                        <li><a href="/contact">ติดต่อเรา</a></li>
+                        <li><a href="/faq">คำถามที่พบบ่อย</a></li>
+                        <li><a href="/shipping">การจัดส่ง</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>นโยบาย</h4>
+                    <ul>
+                        <li><a href="/privacy">นโยบายความเป็นส่วนตัว</a></li>
+                        <li><a href="/terms">ข้อกำหนดการใช้งาน</a></li>
+                        <li><a href="/return-policy">นโยบายการคืนสินค้า</a></li>
+                        <li><a href="/admin/login">สำหรับ Admin</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SSS Supply Marketplace. สงวนลิขสิทธิ์ทั้งหมด</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function handleSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (query) {
+                // Redirect to search results page
+                window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        function requireLogin() {
+            alert('กรุณาเข้าสู่ระบบก่อนเพื่อเพิ่มสินค้าลงตะกร้า');
+            // Redirect to login page
+            window.location.href = '/auth/signin';
+        }
+
+        function scrollCategories(direction) {
+            const container = document.getElementById('categoriesScroll');
+            const scrollAmount = 200;
+            
+            if (direction === 'left') {
+                container.scrollLeft -= scrollAmount;
+            } else {
+                container.scrollLeft += scrollAmount;
+            }
+        }
+
+        // Handle Enter key in search input
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Super Admin Detection
+        function checkSuperAdminAccess() {
+            // ตรวจสอบว่า Super Admin mode เปิดอยู่หรือไม่
+            const superAdminEnabled = 'true'; // จาก NEXT_PUBLIC_SUPER_ADMIN_ENABLED
+            
+            if (superAdminEnabled === 'true') {
+                // แสดงปุ่ม Super Admin ใน dropdown
+                const superAdminLink = document.getElementById('superAdminLink');
+                if (superAdminLink) {
+                    superAdminLink.style.display = 'block';
+                }
+            }
+        }
+
+        // เรียกใช้เมื่อหน้าโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSuperAdminAccess();
+        });
+    </script>
+</body>
+</html>
+
