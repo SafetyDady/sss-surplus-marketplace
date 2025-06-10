@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SSS Surplus Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .btn-social {
+            transition: all 0.3s ease;
+        }
+        .btn-social:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .loading {
+            display: none;
+        }
+        .loading.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-tie text-white text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800">Admin Portal</h1>
+            <p class="text-gray-600 mt-2">ระบบจัดการสำหรับผู้ดูแลระบบ</p>
+        </div>
+
+        <!-- Login Type Selector -->
+        <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+            <button id="adminTab" class="flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all bg-white text-blue-600 shadow-sm">
+                <i class="fas fa-user-tie mr-1"></i>
+                Admin
+            </button>
+            <button id="vendorTab" class="flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all text-gray-600 hover:text-gray-800">
+                <i class="fas fa-store mr-1"></i>
+                Vendor
+            </button>
+            <button id="superAdminTab" class="flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all text-gray-600 hover:text-gray-800">
+                <i class="fas fa-crown mr-1"></i>
+                Super
+            </button>
+        </div>
+
+        <!-- Super Admin Form -->
+        <div id="superAdminForm" class="hidden">
+            <form id="superAdminLoginForm" class="space-y-4 mb-6">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                    <div class="flex items-center">
+                        <span class="text-yellow-600 mr-2">🔒</span>
+                        <span class="text-sm text-yellow-800">เข้าสู่ระบบด้วย Environment Credentials</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">อีเมลผู้ดูแลระบบ</label>
+                    <input type="email" id="superAdminEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="sanchai5651@gmail.com" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">รหัสผ่าน</label>
+                    <input type="password" id="superAdminPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all">
+                    เข้าสู่ระบบ SUPER ADMIN
+                </button>
+            </form>
+        </div>
+
+        <!-- Social Login for Admin/Vendor -->
+        <div id="socialLoginSection">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <div class="flex items-center">
+                    <span class="text-blue-600 mr-2">ℹ️</span>
+                    <span class="text-sm text-blue-800">เข้าสู่ระบบด้วย Social Account แล้วรอการ Assign Role</span>
+                </div>
+            </div>
+
+            <div class="text-center text-gray-600 mb-4">เข้าสู่ระบบด้วย</div>
+
+            <!-- Social Login Buttons -->
+            <div class="space-y-3">
+                <button id="googleLogin" class="btn-social w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors group">
+                    <i class="fab fa-google text-red-500 mr-3 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-gray-700">เข้าสู่ระบบด้วย Google</span>
+                </button>
+
+                <button id="facebookLogin" class="btn-social w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors group">
+                    <i class="fab fa-facebook text-blue-600 mr-3 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-gray-700">เข้าสู่ระบบด้วย Facebook</span>
+                </button>
+
+                <button id="lineLogin" class="btn-social w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors group">
+                    <i class="fab fa-line text-green-500 mr-3 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-gray-700">เข้าสู่ระบบด้วย Line</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Role Assignment Info -->
+        <div id="roleInfo" class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h3 class="font-medium text-gray-800 mb-2">ขั้นตอนการได้รับสิทธิ์ Admin:</h3>
+            <ol class="text-sm text-gray-600 space-y-1">
+                <li>1. เข้าสู่ระบบด้วย Social Account</li>
+                <li>2. รอ Super Admin assign role</li>
+                <li>3. ได้รับการแจ้งเตือนทาง Email</li>
+                <li>4. เข้าสู่ระบบอีกครั้งเพื่อใช้งาน Admin Panel</li>
+            </ol>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span class="text-gray-700">กำลังเข้าสู่ระบบ...</span>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                <span class="text-sm text-green-800">เข้าสู่ระบบสำเร็จ! กำลังเปลี่ยนเส้นทาง...</span>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                <span id="errorText" class="text-sm text-red-800">เกิดข้อผิดพลาดในการเข้าสู่ระบบ</span>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-6">
+            <a href="/" class="text-gray-500 hover:text-gray-700 text-sm transition-colors">
+                ← กลับไปหน้าหลัก
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentLoginType = 'admin';
+        
+        // Tab switching
+        document.getElementById('adminTab').addEventListener('click', () => switchTab('admin'));
+        document.getElementById('vendorTab').addEventListener('click', () => switchTab('vendor'));
+        document.getElementById('superAdminTab').addEventListener('click', () => switchTab('super_admin'));
+
+        function switchTab(type) {
+            currentLoginType = type;
+            
+            // Update tab styles
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.className = 'flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all text-gray-600 hover:text-gray-800';
+            });
+            
+            const activeTab = document.getElementById(type === 'super_admin' ? 'superAdminTab' : type + 'Tab');
+            if (type === 'admin') {
+                activeTab.className = 'flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all bg-white text-blue-600 shadow-sm';
+            } else if (type === 'vendor') {
+                activeTab.className = 'flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all bg-white text-green-600 shadow-sm';
+            } else {
+                activeTab.className = 'flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all bg-white text-purple-600 shadow-sm';
+            }
+            
+            // Show/hide sections
+            if (type === 'super_admin') {
+                document.getElementById('superAdminForm').classList.remove('hidden');
+                document.getElementById('socialLoginSection').classList.add('hidden');
+                document.getElementById('roleInfo').classList.add('hidden');
+            } else {
+                document.getElementById('superAdminForm').classList.add('hidden');
+                document.getElementById('socialLoginSection').classList.remove('hidden');
+                document.getElementById('roleInfo').classList.remove('hidden');
+                
+                // Update role info text
+                const roleText = type === 'admin' ? 'Admin' : 'Vendor';
+                const assignerText = type === 'admin' ? 'Super Admin' : 'Admin';
+                document.querySelector('#roleInfo h3').textContent = `ขั้นตอนการได้รับสิทธิ์ ${roleText}:`;
+                document.querySelector('#roleInfo ol li:nth-child(2)').textContent = `2. รอ ${assignerText} assign role`;
+                document.querySelector('#roleInfo ol li:nth-child(4)').textContent = `4. เข้าสู่ระบบอีกครั้งเพื่อใช้งาน ${roleText} Panel`;
+            }
+        }
+
+        // Social Login handlers
+        document.getElementById('googleLogin').addEventListener('click', () => handleSocialLogin('google'));
+        document.getElementById('facebookLogin').addEventListener('click', () => handleSocialLogin('facebook'));
+        document.getElementById('lineLogin').addEventListener('click', () => handleSocialLogin('line'));
+
+        function handleSocialLogin(provider) {
+            console.log(`Attempting ${provider} login for ${currentLoginType}`);
+            showLoading();
+            
+            // Store login type for callback
+            sessionStorage.setItem('pendingLoginType', currentLoginType);
+            
+            // Simulate API call
+            setTimeout(() => {
+                hideLoading();
+                
+                // For demo purposes, show success message
+                showSuccess();
+                
+                // Simulate redirect after 2 seconds
+                setTimeout(() => {
+                    if (currentLoginType === 'admin') {
+                        window.location.href = '/admin/dashboard';
+                    } else if (currentLoginType === 'vendor') {
+                        window.location.href = '/vendor/dashboard';
+                    }
+                }, 2000);
+                
+            }, 1500);
+        }
+
+        // Super Admin Login
+        document.getElementById('superAdminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('superAdminEmail').value;
+            const password = document.getElementById('superAdminPassword').value;
+            
+            console.log('Super Admin login attempt:', { email, password });
+            showLoading();
+            
+            // Simulate API call
+            setTimeout(() => {
+                hideLoading();
+                
+                // Check credentials (for demo)
+                if (email === 'sanchai5651@gmail.com' && password === 'Safety17') {
+                    showSuccess();
+                    setTimeout(() => {
+                        window.location.href = '/admin/super/dashboard';
+                    }, 2000);
+                } else {
+                    showError('ข้อมูลเข้าสู่ระบบไม่ถูกต้อง');
+                }
+            }, 1500);
+        });
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function showSuccess() {
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+
+        // Initialize
+        switchTab('admin');
+    </script>
+</body>
+</html>
+
