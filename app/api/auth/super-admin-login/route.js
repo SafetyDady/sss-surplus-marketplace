@@ -64,7 +64,7 @@ export async function POST(request) {
         name: process.env.SUPER_ADMIN_NAME || 'System Administrator',
         role: 'super_admin',
       },
-      redirectTo: '/admin/super'
+      redirectTo: '/admin/super/dashboard'
     });
 
   } catch (error) {
