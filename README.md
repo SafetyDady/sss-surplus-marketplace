@@ -235,3 +235,10 @@ LINE_CHANNEL_SECRET=
 Deploy to Vercel with environment variables configured.
 >>>>>>> 4c16117cc7d2cc72b6c7bce22ac7a18b3101ad7f
 
+# Trigger Redeploy
+
+Environment Variables updated in Vercel with real Firebase config.
+Triggering redeploy to rebuild with new environment variables.
+
+Date: Tue Jun 10 06:17:13 EDT 2025
+
