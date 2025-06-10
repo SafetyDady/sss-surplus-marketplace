@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAdminAuthStateChanged } from '../lib/auth';
 
 const AuthContext = createContext({});
 
@@ -16,21 +15,16 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [adminData, setAdminData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changed to false for immediate load
 
+  // Mock authentication - disable Firebase for now
   useEffect(() => {
-    const unsubscribe = onAdminAuthStateChanged((authData) => {
-      if (authData) {
-        setUser(authData.user);
-        setAdminData(authData.adminData);
-      } else {
-        setUser(null);
-        setAdminData(null);
-      }
+    // Simulate quick auth check without Firebase
+    const timer = setTimeout(() => {
       setLoading(false);
-    });
+    }, 100);
 
-    return () => unsubscribe();
+    return () => clearTimeout(timer);
   }, []);
 
   const value = {
