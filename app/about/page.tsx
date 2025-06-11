@@ -1,4 +1,29 @@
 import React from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'เกี่ยวกับเรา - MTP Surplus | ผู้นำด้านการจัดหาสินค้าคุณภาพสูง',
+  description: 'MTP Surplus เป็นผู้นำด้านการจัดหาและจำหน่ายสินค้าคุณภาพสูงมากว่า 10 ปี ด้วยทีมงานมืออาชีพและบริการที่เป็นเลิศ เรามีลูกค้าพึงพอใจกว่า 1000+ ราย',
+  keywords: ['MTP Surplus', 'เกี่ยวกับเรา', 'การจัดหาสินค้า', 'สินค้าคุณภาพสูง', 'ประสบการณ์ 10 ปี', 'ผู้นำด้านการจัดหา', 'บริการเป็นเลิศ', 'ทีมงานมืออาชีพ'],
+  openGraph: {
+    title: 'เกี่ยวกับเรา - MTP Surplus | ผู้นำด้านการจัดหาสินค้าคุณภาพสูง',
+    description: 'MTP Surplus เป็นผู้นำด้านการจัดหาและจำหน่ายสินค้าคุณภาพสูงมากว่า 10 ปี ด้วยทีมงานมืออาชีพและบริการที่เป็นเลิศ',
+    type: 'website',
+    locale: 'th_TH',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'เกี่ยวกับเรา - MTP Surplus',
+    description: 'ผู้นำด้านการจัดหาสินค้าคุณภาพสูงมากว่า 10 ปี',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: '/about',
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -10,7 +35,7 @@ export default function AboutPage() {
             <div className="bg-white text-blue-600 w-10 h-10 rounded-lg flex items-center justify-center font-bold">
               M
             </div>
-            <span className="text-xl font-bold">MTP Supply</span>
+            <span className="text-xl font-bold">MTP Surplus</span>
           </div>
           <nav className="hidden md:flex space-x-6">
             <a href="/" className="hover:text-blue-200 transition-colors">หน้าหลัก</a>
@@ -25,7 +50,7 @@ export default function AboutPage() {
       <section className="bg-gradient-to-br from-blue-50 to-purple-50 py-20">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold text-gray-800 mb-6">
-            เกี่ยวกับ <span className="text-blue-600">MTP Supply</span>
+            เกี่ยวกับ <span className="text-blue-600">MTP Surplus</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             ผู้นำด้านการจัดหาและจำหน่ายสินค้าคุณภาพสูง ด้วยประสบการณ์กว่า 10 ปี 
@@ -41,7 +66,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-4xl font-bold text-gray-800 mb-6">เรื่องราวของเรา</h2>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                MTP Supply ก่อตั้งขึ้นในปี 2014 ด้วยวิสัยทัศน์ในการเป็นผู้นำด้านการจัดหาสินค้าคุณภาพสูง
+                MTP Surplus ก่อตั้งขึ้นในปี 2014 ด้วยวิสัยทัศน์ในการเป็นผู้นำด้านการจัดหาสินค้าคุณภาพสูง
                 เราเริ่มต้นจากธุรกิจขนาดเล็กและเติบโตมาเป็นบริษัทชั้นนำที่มีเครือข่ายกว้างขวางทั่วประเทศ
               </p>
               <p className="text-gray-600 leading-relaxed">
@@ -85,7 +110,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -97,7 +122,7 @@ export default function AboutPage() {
             </div>
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
@@ -124,44 +149,44 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">คุณภาพ</h3>
+              <h4 className="text-xl font-bold text-gray-800 mb-3">คุณภาพ</h4>
               <p className="text-gray-600">
                 มุ่งมั่นในการให้บริการและสินค้าที่มีคุณภาพสูงสุด
               </p>
             </div>
             <div className="text-center">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">ความน่าเชื่อถือ</h3>
+              <h4 className="text-xl font-bold text-gray-800 mb-3">ความน่าเชื่อถือ</h4>
               <p className="text-gray-600">
                 สร้างความไว้วางใจผ่านการปฏิบัติที่โปร่งใสและซื่อสัตย์
               </p>
             </div>
             <div className="text-center">
               <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">นวัตกรรม</h3>
+              <h4 className="text-xl font-bold text-gray-800 mb-3">นวัตกรรม</h4>
               <p className="text-gray-600">
                 พัฒนาและปรับปรุงอย่างต่อเนื่องเพื่อตอบสนองความต้องการ
               </p>
             </div>
             <div className="text-center">
               <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">การบริการ</h3>
+              <h4 className="text-xl font-bold text-gray-800 mb-3">การบริการ</h4>
               <p className="text-gray-600">
                 ให้บริการด้วยใจและความเอาใจใส่ในทุกรายละเอียด
               </p>
@@ -184,7 +209,7 @@ export default function AboutPage() {
               <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center text-white text-2xl font-bold">
                 สม
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">สมชาย วิทยากุล</h3>
+              <h4 className="text-xl font-bold text-gray-800 mb-2">สมชาย วิทยากุล</h4>
               <p className="text-blue-600 font-semibold mb-4">ประธานเจ้าหน้าที่บริหาร</p>
               <p className="text-gray-600 text-sm">
                 ประสบการณ์กว่า 15 ปีในอุตสาหกรรมการจัดหาสินค้า 
@@ -195,7 +220,7 @@ export default function AboutPage() {
               <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center text-white text-2xl font-bold">
                 อน
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">อนุชา ธุรกิจดี</h3>
+              <h4 className="text-xl font-bold text-gray-800 mb-2">อนุชา ธุรกิจดี</h4>
               <p className="text-purple-600 font-semibold mb-4">ผู้อำนวยการฝ่ายขาย</p>
               <p className="text-gray-600 text-sm">
                 เชี่ยวชาญด้านการขายและการตลาด มีเครือข่ายลูกค้า
@@ -206,7 +231,7 @@ export default function AboutPage() {
               <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-6 flex items-center justify-center text-white text-2xl font-bold">
                 ปร
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">ประยุทธ คุณภาพดี</h3>
+              <h4 className="text-xl font-bold text-gray-800 mb-2">ประยุทธ คุณภาพดี</h4>
               <p className="text-green-600 font-semibold mb-4">ผู้อำนวยการฝ่ายปฏิบัติการ</p>
               <p className="text-gray-600 text-sm">
                 ผู้เชี่ยวชาญด้านการจัดการห่วงโซ่อุปทานและ
@@ -250,7 +275,7 @@ export default function AboutPage() {
                 <div className="bg-blue-600 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold">
                   M
                 </div>
-                <span className="text-xl font-bold">MTP Supply</span>
+                <span className="text-xl font-bold">MTP Surplus</span>
               </div>
               <p className="text-gray-400">
                 ผู้นำด้านการจัดหาสินค้าคุณภาพสูง ด้วยประสบการณ์และความเชี่ยวชาญ
@@ -285,7 +310,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 MTP Supply. สงวนลิขสิทธิ์.</p>
+            <p>&copy; 2024 MTP Surplus. สงวนลิขสิทธิ์.</p>
           </div>
         </div>
       </footer>
