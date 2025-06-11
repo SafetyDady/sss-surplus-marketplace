@@ -6,12 +6,13 @@ import Image from 'next/image'
 
 /*
 File: /components/admin/UserStatusHeader.tsx
-Version: 1.1 | 2025-06-08
+Version: 1.2 | 2025-06-11
 note: 
 - User Status Header Component สำหรับแสดงสถานะผู้ใช้
 - แก้ไข img tags เป็น Next.js Image component
 - รองรับ Google Profile Picture และ Role indicators
 - มี dropdown menu สำหรับ user actions
+- เพิ่มรองรับ System Admin role
 */
 
 interface UserStatusHeaderProps {
@@ -19,7 +20,7 @@ interface UserStatusHeaderProps {
     name?: string
     email?: string
     photoURL?: string
-    role?: 'admin' | 'vendor' | 'user'
+    role?: string
   }
   onLogout?: () => void
   onProfileClick?: () => void
@@ -27,6 +28,12 @@ interface UserStatusHeaderProps {
 }
 
 const roleConfig = {
+  'System Admin': {
+    label: 'System Admin',
+    color: 'bg-purple-500',
+    icon: <Shield size={14} />,
+    textColor: 'text-purple-600'
+  },
   admin: {
     label: 'Admin',
     color: 'bg-red-500',
@@ -78,7 +85,9 @@ export default function UserStatusHeader({
     )
   }
 
-  const roleInfo = roleConfig[user.role || 'user']
+  // ใช้ role ที่กำหนดหรือ fallback เป็น 'user'
+  const roleKey = user.role || 'user'
+  const roleInfo = roleConfig[roleKey] || roleConfig.user
   const displayName = user.name || user.email?.split('@')[0] || 'ผู้ใช้'
 
   return (
@@ -185,7 +194,7 @@ export default function UserStatusHeader({
             </button>
 
             {/* Role Switch (if applicable) */}
-            {user.role === 'admin' && (
+            {(user.role === 'admin' || user.role === 'System Admin') && (
               <div className="border-t border-gray-100 mt-1 pt-1">
                 <div className="px-4 py-2 text-xs text-gray-500 font-medium">สลับบทบาท</div>
                 <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-3">

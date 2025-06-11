@@ -5,12 +5,13 @@ import UserStatusHeader from './UserStatusHeader'
 
 /*
 File: /components/admin/AdminHeader.tsx
-Version: 5.1 | 2025-06-10
+Version: 5.2 | 2025-06-11
 note: 
 - ปรับปรุง AdminHeader ให้รวม UserStatusHeader
 - เพิ่ม responsive design และ modern styling
 - รองรับ user authentication และ role management
 - ดึงข้อมูล user จาก JWT token แทน mock data
+- แก้ไขให้แสดงข้อมูล System Admin ที่ถูกต้อง
 */
 
 export default function AdminHeader() {
@@ -22,20 +23,33 @@ export default function AdminHeader() {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]))
-        setUser({
-          name: payload.name || 'System Administrator',
-          email: payload.email || 'sanchai5651@gmail.com',
-          photoURL: '',
-          role: payload.role === 'super_admin' ? 'System Admin' : payload.role
-        })
+        
+        // ตรวจสอบว่าเป็น super_admin หรือไม่
+        if (payload.role === 'super_admin') {
+          // กรณีเป็น super_admin ให้แสดงเป็น System Admin
+          setUser({
+            name: 'System Administrator',
+            email: 'sanchai5651@gmail.com',
+            photoURL: '',
+            role: 'System Admin'
+          })
+        } else {
+          // กรณีเป็น role อื่นๆ
+          setUser({
+            name: payload.name || 'User',
+            email: payload.email || '',
+            photoURL: payload.photoURL || '',
+            role: payload.role || 'user'
+          })
+        }
       } catch (error) {
         console.error('Error decoding token:', error)
-        // Fallback to mock data
+        // Fallback ให้เป็น System Admin เสมอ (สำหรับ super admin page)
         setUser({
-          name: 'Admin User',
-          email: 'admin@sss-supply.com',
+          name: 'System Administrator',
+          email: 'sanchai5651@gmail.com',
           photoURL: '',
-          role: 'admin'
+          role: 'System Admin'
         })
       }
     }
