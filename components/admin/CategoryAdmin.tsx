@@ -15,12 +15,13 @@ import { Plus, Edit2, Trash2, Save, X } from 'lucide-react'
 
 /*
 File: /components/admin/CategoryAdmin.tsx
-Version: 4.0 | 2025-06-07
+Version: 4.1 | 2025-06-11
 note:
 - ปรับปรุง responsive design สำหรับ 3 column tree
 - เพิ่ม icons และ better UX
 - ปรับปรุง layout ให้ทำงานได้ดีในทุกขนาดหน้าจอ
 - เพิ่ม loading states และ error handling
+- เพิ่ม debug logs เพื่อตรวจสอบการเชื่อมต่อ Firebase
 */
 
 type Category = {
@@ -47,7 +48,10 @@ export default function CategoryAdmin() {
   const fetchCategories = async () => {
     setLoading(true)
     try {
+      console.log("Fetching categories from collection:", db ? "db initialized" : "db not initialized");
       const snap = await getDocs(collection(db, 'categories'))
+      console.log("Categories fetched:", snap.docs.length);
+      
       setCategories(
         snap.docs.map(doc => ({
           id: doc.id,
@@ -56,13 +60,18 @@ export default function CategoryAdmin() {
         }))
       )
       setError(null)
-    } catch {
-      setError('เกิดข้อผิดพลาดในการโหลดข้อมูล')
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setError('เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + (error instanceof Error ? error.message : String(error)))
     }
     setLoading(false)
   }
 
   useEffect(() => {
+    console.log("CategoryAdmin component mounted");
+    console.log("Firebase Project ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? "Set" : "Not Set");
+    console.log("Attempting to connect to Firebase...");
+    
     fetchCategories()
   }, [])
 
@@ -71,12 +80,14 @@ export default function CategoryAdmin() {
     if (!mainName.trim()) return
     setLoading(true)
     try {
+      console.log("Adding main category:", mainName.trim());
       await addDoc(collection(db, 'categories'), { name: mainName.trim(), parentId: null })
       setMainName('')
       await fetchCategories()
       setError(null)
-    } catch {
-      setError('เพิ่มหมวดหลักไม่สำเร็จ')
+    } catch (error) {
+      console.error("Error adding main category:", error);
+      setError('เพิ่มหมวดหลักไม่สำเร็จ: ' + (error instanceof Error ? error.message : String(error)))
     }
     setLoading(false)
   }
@@ -86,12 +97,14 @@ export default function CategoryAdmin() {
     if (!subName.trim() || !selectedMain) return
     setLoading(true)
     try {
+      console.log("Adding sub category:", subName.trim(), "under parent:", selectedMain.id);
       await addDoc(collection(db, 'categories'), { name: subName.trim(), parentId: selectedMain.id })
       setSubName('')
       await fetchCategories()
       setError(null)
-    } catch {
-      setError('เพิ่มหมวดย่อยไม่สำเร็จ')
+    } catch (error) {
+      console.error("Error adding sub category:", error);
+      setError('เพิ่มหมวดย่อยไม่สำเร็จ: ' + (error instanceof Error ? error.message : String(error)))
     }
     setLoading(false)
   }
@@ -101,12 +114,14 @@ export default function CategoryAdmin() {
     if (!sub2Name.trim() || !selectedSub) return
     setLoading(true)
     try {
+      console.log("Adding sub2 category:", sub2Name.trim(), "under parent:", selectedSub.id);
       await addDoc(collection(db, 'categories'), { name: sub2Name.trim(), parentId: selectedSub.id })
       setSub2Name('')
       await fetchCategories()
       setError(null)
-    } catch {
-      setError('เพิ่ม sub2 ไม่สำเร็จ')
+    } catch (error) {
+      console.error("Error adding sub2 category:", error);
+      setError('เพิ่มหมวดย่อยระดับ 2 ไม่สำเร็จ: ' + (error instanceof Error ? error.message : String(error)))
     }
     setLoading(false)
   }
@@ -115,6 +130,7 @@ export default function CategoryAdmin() {
     if (!confirm('คุณแน่ใจหรือไม่ที่จะลบหมวดหมู่นี้?')) return
     setLoading(true)
     try {
+      console.log("Deleting category:", id);
       await deleteDoc(doc(db, 'categories', id))
       // Delete child categories
       for (const cat of categories.filter(cat => cat.parentId === id)) {
@@ -124,8 +140,9 @@ export default function CategoryAdmin() {
       if (selectedSub && selectedSub.id === id) setSelectedSub(null)
       await fetchCategories()
       setError(null)
-    } catch {
-      setError('ลบหมวดหมู่ไม่สำเร็จ')
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      setError('ลบหมวดหมู่ไม่สำเร็จ: ' + (error instanceof Error ? error.message : String(error)))
     }
     setLoading(false)
   }
@@ -139,6 +156,7 @@ export default function CategoryAdmin() {
     if (!editingId || !editingName.trim()) return
     setLoading(true)
     try {
+      console.log("Updating category:", editingId, "with name:", editingName.trim());
       await updateDoc(doc(db, 'categories', editingId), {
         name: editingName.trim(),
       })
@@ -146,8 +164,9 @@ export default function CategoryAdmin() {
       setEditingName('')
       await fetchCategories()
       setError(null)
-    } catch {
-      setError('แก้ไขหมวดหมู่ไม่สำเร็จ')
+    } catch (error) {
+      console.error("Error updating category:", error);
+      setError('แก้ไขหมวดหมู่ไม่สำเร็จ: ' + (error instanceof Error ? error.message : String(error)))
     }
     setLoading(false)
   }
@@ -477,17 +496,6 @@ export default function CategoryAdmin() {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Instructions */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-gray-800 mb-2">วิธีการใช้งาน:</h4>
-          <ol className="text-sm text-gray-600 space-y-1">
-            <li>1. เพิ่มหมวดหลักในคอลัมน์แรก</li>
-            <li>2. คลิกเลือกหมวดหลัก แล้วเพิ่มหมวดย่อยในคอลัมน์ที่สอง</li>
-            <li>3. คลิกเลือกหมวดย่อย แล้วเพิ่มหมวดย่อยระดับ 2 ในคอลัมน์ที่สาม</li>
-            <li>4. ใช้ปุ่มแก้ไขและลบเพื่อจัดการหมวดหมู่</li>
-          </ol>
         </div>
       </div>
     </AdminCardContainer>
