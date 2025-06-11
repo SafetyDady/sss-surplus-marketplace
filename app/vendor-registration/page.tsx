@@ -617,7 +617,7 @@ export default function VendorRegistrationPage() {
       <section className="hero-section">
         <div className="container">
           <h1>🤝 สมัครเป็น Vendor</h1>
-          <p>เข้าร่วมเป็นส่วนหนึ่งของ SSS Supply Marketplace แพลตฟอร์มการซื้อขายสินค้า Surplus ที่ใหญ่ที่สุดในประเทศไทย</p>
+          <p>เข้าร่วมเป็นส่วนหนึ่งของ MTP Supply Marketplace แพลตฟอร์มการซื้อขายสินค้า Surplus ที่ใหญ่ที่สุดในประเทศไทย</p>
         </div>
       </section>
 
@@ -1054,7 +1054,7 @@ export default function VendorRegistrationPage() {
                   value={formData.motivation}
                   onChange={handleInputChange}
                   className={fieldErrors.motivation || errors.motivation ? 'error' : ''}
-                  placeholder="อธิบายเหตุผลที่ต้องการขายสินค้าผ่าน SSS Supply และเป้าหมายทางธุรกิจ"
+                  placeholder="อธิบายเหตุผลที่ต้องการขายสินค้าผ่าน MTP Supply และเป้าหมายทางธุรกิจ"
                 />
                 {(fieldErrors.motivation || errors.motivation) && (
                   <div className="field-error">{fieldErrors.motivation || errors.motivation}</div>
@@ -1097,7 +1097,7 @@ export default function VendorRegistrationPage() {
                   onChange={handleInputChange}
                 />
                 <label htmlFor="newsletter">
-                  รับข่าวสารและโปรโมชั่นจาก SSS Supply
+                  รับข่าวสารและโปรโมชั่นจาก MTP Supply
                 </label>
               </div>
             </div>

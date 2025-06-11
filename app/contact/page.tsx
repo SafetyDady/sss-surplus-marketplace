@@ -237,7 +237,7 @@ export default function ContactPage() {
                     <div>
                       <h3 className="font-semibold text-gray-800">ช่องทางออนไลน์</h3>
                       <p className="text-gray-600">Line ID: @ssssupply</p>
-                      <p className="text-gray-600">Facebook: SSS Supply Thailand</p>
+                      <p className="text-gray-600">Facebook: MTP Supply Thailand</p>
                     </div>
                   </div>
                 </div>

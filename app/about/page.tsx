@@ -8,9 +8,9 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="bg-white text-blue-600 w-10 h-10 rounded-lg flex items-center justify-center font-bold">
-              SSS
+              M
             </div>
-            <span className="text-xl font-bold">SSS Supply</span>
+            <span className="text-xl font-bold">MTP Supply</span>
           </div>
           <nav className="hidden md:flex space-x-6">
             <a href="/" className="hover:text-blue-200 transition-colors">หน้าหลัก</a>
@@ -25,7 +25,7 @@ export default function AboutPage() {
       <section className="bg-gradient-to-br from-blue-50 to-purple-50 py-20">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold text-gray-800 mb-6">
-            เกี่ยวกับ <span className="text-blue-600">SSS Supply</span>
+            เกี่ยวกับ <span className="text-blue-600">MTP Supply</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             ผู้นำด้านการจัดหาและจำหน่ายสินค้าคุณภาพสูง ด้วยประสบการณ์กว่า 10 ปี 
@@ -41,7 +41,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-4xl font-bold text-gray-800 mb-6">เรื่องราวของเรา</h2>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                SSS Supply ก่อตั้งขึ้นในปี 2014 ด้วยวิสัยทัศน์ในการเป็นผู้นำด้านการจัดหาสินค้าคุณภาพสูง
+                MTP Supply ก่อตั้งขึ้นในปี 2014 ด้วยวิสัยทัศน์ในการเป็นผู้นำด้านการจัดหาสินค้าคุณภาพสูง
                 เราเริ่มต้นจากธุรกิจขนาดเล็กและเติบโตมาเป็นบริษัทชั้นนำที่มีเครือข่ายกว้างขวางทั่วประเทศ
               </p>
               <p className="text-gray-600 leading-relaxed">
@@ -248,9 +248,9 @@ export default function AboutPage() {
             <div>
               <div className="flex items-center space-x-3 mb-4">
                 <div className="bg-blue-600 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold">
-                  SSS
+                  M
                 </div>
-                <span className="text-xl font-bold">SSS Supply</span>
+                <span className="text-xl font-bold">MTP Supply</span>
               </div>
               <p className="text-gray-400">
                 ผู้นำด้านการจัดหาสินค้าคุณภาพสูง ด้วยประสบการณ์และความเชี่ยวชาญ
@@ -285,7 +285,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 SSS Supply. สงวนลิขสิทธิ์.</p>
+            <p>&copy; 2024 MTP Supply. สงวนลิขสิทธิ์.</p>
           </div>
         </div>
       </footer>
