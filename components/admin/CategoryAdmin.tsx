@@ -16,11 +16,11 @@ import { Plus, Edit2, Trash2, Save, X } from 'lucide-react'
 
 /*
 File: /components/admin/CategoryAdmin.tsx
-Version: 4.2 | 2025-06-11
+Version: 4.3 | 2025-06-11
 note:
-- เพิ่ม Authentication Context เพื่อให้ Firebase Rules ทำงานได้
-- ใช้ useAuthState เพื่อตรวจสอบสถานะการ login
-- เพิ่มการตรวจสอบสิทธิ์ก่อนทำงาน
+- แก้ไขให้รองรับ Super Admin session จาก localStorage
+- เพิ่มการตรวจสอบ Super Admin ก่อน Firebase Auth
+- รองรับทั้ง Firebase Auth และ Custom Auth
 */
 
 type Category = {
@@ -45,15 +45,38 @@ export default function CategoryAdmin() {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
+  // Check for Super Admin session
+  const [superAdminSession, setSuperAdminSession] = useState<any>(null)
+
+  useEffect(() => {
+    // Check for Super Admin session in localStorage
+    const adminSession = localStorage.getItem('adminSession')
+    if (adminSession) {
+      try {
+        const session = JSON.parse(adminSession)
+        if (session.role === 'super_admin' && session.email === 'sanchai5651@gmail.com') {
+          setSuperAdminSession(session)
+          console.log("Super Admin session found:", session.email)
+        }
+      } catch (e) {
+        console.error("Error parsing admin session:", e)
+      }
+    }
+  }, [])
+
+  // Check if user is authenticated (either Firebase or Super Admin)
+  const isAuthenticated = user || superAdminSession
+  const currentUserEmail = user?.email || superAdminSession?.email || 'Unknown'
+
   const fetchCategories = async () => {
-    if (!user) {
+    if (!isAuthenticated) {
       setErrorMessage('กรุณาเข้าสู่ระบบก่อน')
       return
     }
 
     setIsLoading(true)
     try {
-      console.log("Fetching categories with user:", user.email);
+      console.log("Fetching categories with user:", currentUserEmail);
       const snap = await getDocs(collection(db, 'categories'))
       console.log("Categories fetched:", snap.docs.length);
       
@@ -73,26 +96,26 @@ export default function CategoryAdmin() {
   }
 
   useEffect(() => {
-    if (user) {
-      console.log("User authenticated:", user.email);
+    if (isAuthenticated) {
+      console.log("User authenticated:", currentUserEmail);
       fetchCategories()
     } else if (!loading) {
       console.log("User not authenticated");
       setErrorMessage('กรุณาเข้าสู่ระบบก่อน')
     }
-  }, [user, loading])
+  }, [isAuthenticated, loading])
 
   const handleAddMain = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!mainName.trim() || !user) return
+    if (!mainName.trim() || !isAuthenticated) return
     
     setIsLoading(true)
     try {
-      console.log("Adding main category:", mainName.trim(), "by user:", user.email);
+      console.log("Adding main category:", mainName.trim(), "by user:", currentUserEmail);
       await addDoc(collection(db, 'categories'), { 
         name: mainName.trim(), 
         parentId: null,
-        createdBy: user.uid,
+        createdBy: user?.uid || 'super_admin',
         createdAt: new Date()
       })
       setMainName('')
@@ -107,15 +130,15 @@ export default function CategoryAdmin() {
 
   const handleAddSub = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!subName.trim() || !selectedMain || !user) return
+    if (!subName.trim() || !selectedMain || !isAuthenticated) return
     
     setIsLoading(true)
     try {
-      console.log("Adding sub category:", subName.trim(), "under parent:", selectedMain.id, "by user:", user.email);
+      console.log("Adding sub category:", subName.trim(), "under parent:", selectedMain.id, "by user:", currentUserEmail);
       await addDoc(collection(db, 'categories'), { 
         name: subName.trim(), 
         parentId: selectedMain.id,
-        createdBy: user.uid,
+        createdBy: user?.uid || 'super_admin',
         createdAt: new Date()
       })
       setSubName('')
@@ -130,15 +153,15 @@ export default function CategoryAdmin() {
 
   const handleAddSub2 = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!sub2Name.trim() || !selectedSub || !user) return
+    if (!sub2Name.trim() || !selectedSub || !isAuthenticated) return
     
     setIsLoading(true)
     try {
-      console.log("Adding sub2 category:", sub2Name.trim(), "under parent:", selectedSub.id, "by user:", user.email);
+      console.log("Adding sub2 category:", sub2Name.trim(), "under parent:", selectedSub.id, "by user:", currentUserEmail);
       await addDoc(collection(db, 'categories'), { 
         name: sub2Name.trim(), 
         parentId: selectedSub.id,
-        createdBy: user.uid,
+        createdBy: user?.uid || 'super_admin',
         createdAt: new Date()
       })
       setSub2Name('')
@@ -152,11 +175,11 @@ export default function CategoryAdmin() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('คุณแน่ใจหรือไม่ที่จะลบหมวดหมู่นี้?') || !user) return
+    if (!confirm('คุณแน่ใจหรือไม่ที่จะลบหมวดหมู่นี้?') || !isAuthenticated) return
     
     setIsLoading(true)
     try {
-      console.log("Deleting category:", id, "by user:", user.email);
+      console.log("Deleting category:", id, "by user:", currentUserEmail);
       await deleteDoc(doc(db, 'categories', id))
       
       // Delete child categories
@@ -182,14 +205,14 @@ export default function CategoryAdmin() {
   }
 
   const handleUpdate = async () => {
-    if (!editingId || !editingName.trim() || !user) return
+    if (!editingId || !editingName.trim() || !isAuthenticated) return
     
     setIsLoading(true)
     try {
-      console.log("Updating category:", editingId, "with name:", editingName.trim(), "by user:", user.email);
+      console.log("Updating category:", editingId, "with name:", editingName.trim(), "by user:", currentUserEmail);
       await updateDoc(doc(db, 'categories', editingId), {
         name: editingName.trim(),
-        updatedBy: user.uid,
+        updatedBy: user?.uid || 'super_admin',
         updatedAt: new Date()
       })
       setEditingId(null)
@@ -221,7 +244,7 @@ export default function CategoryAdmin() {
   }
 
   // Show error if not authenticated
-  if (!user) {
+  if (!isAuthenticated) {
     return (
       <AdminCardContainer>
         <div className="text-center py-8">
@@ -253,7 +276,8 @@ export default function CategoryAdmin() {
             จัดการหมวดหมู่แบบ 3 ระดับ: หมวดหลัก → หมวดย่อย → หมวดย่อยระดับ 2
           </p>
           <p className="text-sm text-blue-600 mt-1">
-            เข้าสู่ระบบในฐานะ: {user.email}
+            เข้าสู่ระบบในฐานะ: {currentUserEmail}
+            {superAdminSession && <span className="ml-2 bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">Super Admin</span>}
           </p>
         </div>
 
