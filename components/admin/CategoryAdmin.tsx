@@ -51,15 +51,40 @@ export default function CategoryAdmin() {
   useEffect(() => {
     // Check for Super Admin session in localStorage
     const adminSession = localStorage.getItem('adminSession')
+    const superAdminToken = localStorage.getItem('superAdminToken')
+    const superAdminUser = localStorage.getItem('superAdminUser')
+    
     if (adminSession) {
       try {
         const session = JSON.parse(adminSession)
-        if (session.role === 'super_admin' && session.email === 'sanchai5651@gmail.com') {
+        // Support both old and new structure
+        const role = session.role || session.user?.role
+        const email = session.email || session.user?.email
+        
+        if (role === 'super_admin' && email === 'sanchai5651@gmail.com') {
           setSuperAdminSession(session)
-          console.log("Super Admin session found:", session.email)
+          console.log("Super Admin session found:", email)
         }
       } catch (e) {
         console.error("Error parsing admin session:", e)
+      }
+    } else if (superAdminToken && superAdminUser) {
+      // Fallback: check individual tokens
+      try {
+        const user = JSON.parse(superAdminUser)
+        if (user.role === 'super_admin' && user.email === 'sanchai5651@gmail.com') {
+          const session = {
+            role: user.role,
+            email: user.email,
+            name: user.name,
+            token: superAdminToken,
+            isAuthenticated: true
+          }
+          setSuperAdminSession(session)
+          console.log("Super Admin session created from tokens:", user.email)
+        }
+      } catch (e) {
+        console.error("Error parsing super admin tokens:", e)
       }
     }
   }, [])

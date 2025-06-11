@@ -45,9 +45,20 @@ const AdminVendorSocialLogin = () => {
       const data = await response.json();
       
       if (data.success) {
-        // Store token
-        localStorage.setItem('admin_token', data.token);
-        localStorage.setItem('user_data', JSON.stringify(data.user));
+        // Store token and user data with consistent structure
+        localStorage.setItem('superAdminToken', data.token);
+        localStorage.setItem('superAdminUser', JSON.stringify(data.user));
+        
+        // Store adminSession with consistent structure for CategoryAdmin
+        const adminSession = {
+          role: data.user.role,
+          email: data.user.email,
+          name: data.user.name,
+          token: data.token,
+          isAuthenticated: true,
+          type: 'super_admin'
+        };
+        localStorage.setItem('adminSession', JSON.stringify(adminSession));
         
         // Redirect to dashboard
         window.location.href = data.redirectTo || '/admin/super/dashboard';
