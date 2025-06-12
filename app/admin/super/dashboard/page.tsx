@@ -75,7 +75,7 @@ export default function SuperAdminDashboard() {
               </div>
               <p className="text-blue-100 mb-6">เข้าถึง Admin Dashboard ปกติ สำหรับจัดการเนื้อหาและระบบ</p>
               <a
-                href="/admin"
+                href="/admin/dashboard"
                 className="inline-block w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-3 px-6 rounded-lg transition-all text-center"
               >
                 📊 เข้าสู่ Admin Dashboard
