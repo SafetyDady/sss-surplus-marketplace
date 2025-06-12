@@ -3,6 +3,46 @@
 
 import React, { useState, useEffect } from 'react';
 
+interface HeroData {
+  title: string;
+  subtitle: string;
+}
+
+interface ContactInfo {
+  phones: {
+    office: string;
+    mobile: string;
+  };
+  emails: {
+    general: string;
+    sales: string;
+    support: string;
+  };
+  social: {
+    line: string;
+    facebook: string;
+  };
+}
+
+interface VendorFeature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface VendorData {
+  title: string;
+  subtitle: string;
+  features: VendorFeature[];
+}
+
+interface Subject {
+  id: string;
+  name: string;
+  active: boolean;
+  order: number;
+}
+
 const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -13,6 +53,85 @@ const ContactPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
+
+  // State for dynamic content
+  const [heroData, setHeroData] = useState<HeroData>({
+    title: 'ติดต่อเรา',
+    subtitle: 'พร้อมให้บริการและตอบทุกข้อสงสัยเกี่ยวกับสินค้า Surplus คุณภาพดี'
+  });
+
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    phones: { office: '02-123-4567', mobile: '089-123-4567' },
+    emails: { general: 'info@ssssupply.com', sales: 'sales@ssssupply.com', support: 'support@ssssupply.com' },
+    social: { line: '@ssssupply', facebook: 'MTP Supply Thailand' }
+  });
+
+  const [vendorData, setVendorData] = useState<VendorData>({
+    title: '🤝 สนใจเป็น Vendor กับเรา?',
+    subtitle: 'เข้าร่วมเป็นพาร์ทเนอร์กับเราในการจำหน่ายสินค้า Surplus คุณภาพดี เพิ่มช่องทางขายและเพิ่มรายได้ของคุณ',
+    features: [
+      { icon: '🌟', title: 'เข้าถึงลูกค้าใหม่', description: 'เพิ่มฐานลูกค้าและขยายตลาด' },
+      { icon: '💰', title: 'เพิ่มรายได้', description: 'สร้างรายได้เสริมจากสินค้าคงเหลือ' },
+      { icon: '🚀', title: 'ง่ายต่อการจัดการ', description: 'ระบบจัดการที่ใช้งานง่าย' },
+      { icon: '💎', title: 'ความน่าเชื่อถือ', description: 'แพลตฟอร์มที่มั่นคงและปลอดภัย' }
+    ]
+  });
+
+  const [subjects, setSubjects] = useState<Subject[]>([
+    { id: '1', name: 'สอบถามสินค้า', active: true, order: 1 },
+    { id: '2', name: 'สอบถามราคา', active: true, order: 2 },
+    { id: '3', name: 'แจ้งปัญหา', active: true, order: 3 },
+    { id: '4', name: 'ข้อเสนอแนะ', active: true, order: 4 },
+    { id: '5', name: 'อื่นๆ', active: true, order: 5 }
+  ]);
+
+  // Load dynamic content from Firebase
+  useEffect(() => {
+    loadContentData();
+  }, []);
+
+  const loadContentData = async () => {
+    try {
+      // Load Hero Data
+      const heroResponse = await fetch('/api/contact-content/hero');
+      if (heroResponse.ok) {
+        const heroResult = await heroResponse.json();
+        if (heroResult.success) {
+          setHeroData(heroResult.data);
+        }
+      }
+
+      // Load Contact Info
+      const infoResponse = await fetch('/api/contact-content/info');
+      if (infoResponse.ok) {
+        const infoResult = await infoResponse.json();
+        if (infoResult.success) {
+          setContactInfo(infoResult.data);
+        }
+      }
+
+      // Load Vendor Data
+      const vendorResponse = await fetch('/api/contact-content/vendor');
+      if (vendorResponse.ok) {
+        const vendorResult = await vendorResponse.json();
+        if (vendorResult.success) {
+          setVendorData(vendorResult.data);
+        }
+      }
+
+      // Load Subjects
+      const subjectsResponse = await fetch('/api/contact-content/subjects');
+      if (subjectsResponse.ok) {
+        const subjectsResult = await subjectsResponse.json();
+        if (subjectsResult.success) {
+          setSubjects(subjectsResult.data.filter((s: Subject) => s.active));
+        }
+      }
+    } catch (error) {
+      console.error('Error loading content data:', error);
+      // Keep default values if API fails
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -698,37 +817,24 @@ const ContactPage = () => {
       {/* Hero Section */}
       <section className="contact-hero">
         <div>
-          <h1>ติดต่อเรา</h1>
-          <p>พร้อมให้บริการและตอบทุกข้อสงสัยเกี่ยวกับสินค้า Surplus คุณภาพดี</p>
+          <h1>{heroData.title}</h1>
+          <p>{heroData.subtitle}</p>
         </div>
       </section>
 
       {/* Vendor Section - Moved to top */}
       <div className="vendor-section">
-        <h2>🤝 สนใจเป็น Vendor กับเรา?</h2>
-        <p className="subtitle">เข้าร่วมเป็นพาร์ทเนอร์กับเราในการจำหน่ายสินค้า Surplus คุณภาพดี เพิ่มช่องทางขายและเพิ่มรายได้ของคุณ</p>
+        <h2>{vendorData.title}</h2>
+        <p className="subtitle">{vendorData.subtitle}</p>
         
         <div className="vendor-features">
-          <div className="vendor-feature">
-            <span className="vendor-feature-icon">🌟</span>
-            <h3>เข้าถึงลูกค้าใหม่</h3>
-            <p>เพิ่มฐานลูกค้าและขยายตลาด</p>
-          </div>
-          <div className="vendor-feature">
-            <span className="vendor-feature-icon">💰</span>
-            <h3>เพิ่มรายได้</h3>
-            <p>สร้างรายได้เสริมจากสินค้าคงเหลือ</p>
-          </div>
-          <div className="vendor-feature">
-            <span className="vendor-feature-icon">🚀</span>
-            <h3>ง่ายต่อการจัดการ</h3>
-            <p>ระบบจัดการที่ใช้งานง่าย</p>
-          </div>
-          <div className="vendor-feature">
-            <span className="vendor-feature-icon">💎</span>
-            <h3>ความน่าเชื่อถือ</h3>
-            <p>แพลตฟอร์มที่มั่นคงและปลอดภัย</p>
-          </div>
+          {vendorData.features.map((feature, index) => (
+            <div key={index} className="vendor-feature">
+              <span className="vendor-feature-icon">{feature.icon}</span>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </div>
+          ))}
         </div>
         
         <a href="/vendor-registration" className="vendor-btn">
@@ -802,11 +908,11 @@ const ContactPage = () => {
                 required
               >
                 <option value="">เลือกหัวข้อ</option>
-                <option value="สอบถามสินค้า">สอบถามสินค้า</option>
-                <option value="สอบถามราคา">สอบถามราคา</option>
-                <option value="แจ้งปัญหา">แจ้งปัญหา</option>
-                <option value="ข้อเสนอแนะ">ข้อเสนอแนะ</option>
-                <option value="อื่นๆ">อื่นๆ</option>
+                {subjects.map((subject) => (
+                  <option key={subject.id} value={subject.name}>
+                    {subject.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -838,21 +944,21 @@ const ContactPage = () => {
           
           <div className="info-item">
             <h3>แนวโทรศัพท์</h3>
-            <p>โทร: 02-123-4567</p>
-            <p>มือถือ: 089-123-4567</p>
+            <p>โทร: {contactInfo.phones.office}</p>
+            <p>มือถือ: {contactInfo.phones.mobile}</p>
           </div>
 
           <div className="info-item">
             <h3>อีเมล</h3>
-            <p>ทั่วไป: info@ssssupply.com</p>
-            <p>ขาย: sales@ssssupply.com</p>
-            <p>สนับสนุน: support@ssssupply.com</p>
+            <p>ทั่วไป: {contactInfo.emails.general}</p>
+            <p>ขาย: {contactInfo.emails.sales}</p>
+            <p>สนับสนุน: {contactInfo.emails.support}</p>
           </div>
 
           <div className="info-item">
             <h3>ช่องทางออนไลน์</h3>
-            <p>Line ID: @ssssupply</p>
-            <p>Facebook: MTP Supply Thailand</p>
+            <p>Line ID: {contactInfo.social.line}</p>
+            <p>Facebook: {contactInfo.social.facebook}</p>
           </div>
         </div>
       </div>
