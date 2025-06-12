@@ -5,16 +5,36 @@ import { useAuth } from '../../components/AuthProvider';
 import { useRouter } from 'next/navigation';
 
 export default function AdminPage() {
-  const { adminData, loading } = useAuth();
+  const { adminData, loading, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!loading) {
+      // ตรวจสอบว่าเป็น Super Admin หรือไม่
+      const isSuperAdmin = adminData?.role === 'super_admin';
+      
+      // ตรวจสอบว่ามาจาก URL ไหน (เพื่อป้องกัน redirect loop)
+      const fromSuperAdmin = window.location.pathname.includes('/admin/super');
+      
       if (adminData) {
-        // ถ้า authenticated แล้ว redirect ไป dashboard
-        router.push('/admin/dashboard');
+        // ถ้าเป็น Super Admin และมาจากหน้า Super Admin Dashboard
+        if (isSuperAdmin && fromSuperAdmin) {
+          console.log('Super Admin redirecting to dashboard');
+          router.push('/admin/dashboard');
+        }
+        // ถ้าเป็น Super Admin แต่ไม่ได้มาจากหน้า Super Admin Dashboard
+        else if (isSuperAdmin) {
+          console.log('Super Admin accessing admin page');
+          router.push('/admin/super/dashboard');
+        }
+        // ถ้าเป็น Admin ทั่วไป
+        else {
+          console.log('Regular admin redirecting to dashboard');
+          router.push('/admin/dashboard');
+        }
       } else {
         // ถ้ายัง unauthenticated redirect ไป login
+        console.log('Unauthenticated, redirecting to login');
         router.push('/admin/login');
       }
     }
