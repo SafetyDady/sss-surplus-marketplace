@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/firebase/firebase';
-import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { adminDb, getServerTimestamp } from '@/lib/firebase-admin';
 
 // GET - ดึงรายการหัวข้อทั้งหมด
 export async function GET() {
   try {
-    const subjectsRef = collection(db, 'contact_subjects');
-    const q = query(subjectsRef, orderBy('order', 'asc'));
-    const querySnapshot = await getDocs(q);
+    const subjectsRef = adminDb.collection('contact_subjects');
+    const querySnapshot = await subjectsRef.orderBy('order', 'asc').get();
     
     if (!querySnapshot.empty) {
       const subjects = querySnapshot.docs.map(doc => ({
@@ -30,14 +28,16 @@ export async function GET() {
       ];
 
       // บันทึกข้อมูลเริ่มต้นลง Firebase
+      const batch = adminDb.batch();
       for (const subject of defaultSubjects) {
-        const docRef = doc(db, 'contact_subjects', subject.id);
-        await setDoc(docRef, {
+        const docRef = adminDb.collection('contact_subjects').doc(subject.id);
+        batch.set(docRef, {
           ...subject,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
+          createdAt: getServerTimestamp(),
+          updatedAt: getServerTimestamp()
         });
       }
+      await batch.commit();
       
       return NextResponse.json({
         success: true,
@@ -67,8 +67,8 @@ export async function POST(request: NextRequest) {
     }
 
     // หา order ถัดไป
-    const subjectsRef = collection(db, 'contact_subjects');
-    const querySnapshot = await getDocs(subjectsRef);
+    const subjectsRef = adminDb.collection('contact_subjects');
+    const querySnapshot = await subjectsRef.get();
     const maxOrder = querySnapshot.docs.reduce((max, doc) => {
       const order = doc.data().order || 0;
       return order > max ? order : max;
@@ -76,22 +76,29 @@ export async function POST(request: NextRequest) {
 
     // สร้าง ID ใหม่
     const newId = Date.now().toString();
-    const docRef = doc(db, 'contact_subjects', newId);
+    const docRef = adminDb.collection('contact_subjects').doc(newId);
     
     const newSubject = {
       name: name.trim(),
       active: true,
       order: maxOrder + 1,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      createdAt: getServerTimestamp(),
+      updatedAt: getServerTimestamp()
     };
 
-    await setDoc(docRef, newSubject);
+    await docRef.set(newSubject);
 
     return NextResponse.json({
       success: true,
       message: 'Subject added successfully',
-      data: { id: newId, ...newSubject }
+      data: { 
+        id: newId, 
+        name: name.trim(),
+        active: true,
+        order: maxOrder + 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
     });
   } catch (error) {
     console.error('Error adding subject:', error);
@@ -115,20 +122,26 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const docRef = doc(db, 'contact_subjects', id);
+    const docRef = adminDb.collection('contact_subjects').doc(id);
     const updateData = {
       name: name.trim(),
       active: active !== undefined ? active : true,
       order: order || 1,
-      updatedAt: serverTimestamp()
+      updatedAt: getServerTimestamp()
     };
 
-    await setDoc(docRef, updateData, { merge: true });
+    await docRef.set(updateData, { merge: true });
 
     return NextResponse.json({
       success: true,
       message: 'Subject updated successfully',
-      data: { id, ...updateData }
+      data: { 
+        id, 
+        name: name.trim(),
+        active: active !== undefined ? active : true,
+        order: order || 1,
+        updatedAt: new Date().toISOString()
+      }
     });
   } catch (error) {
     console.error('Error updating subject:', error);
@@ -152,8 +165,8 @@ export async function DELETE(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const docRef = doc(db, 'contact_subjects', id);
-    await deleteDoc(docRef);
+    const docRef = adminDb.collection('contact_subjects').doc(id);
+    await docRef.delete();
 
     return NextResponse.json({
       success: true,

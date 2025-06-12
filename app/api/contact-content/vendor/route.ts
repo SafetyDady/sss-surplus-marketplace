@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/firebase/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { adminDb, getServerTimestamp } from '@/lib/firebase-admin';
 
 // GET - ดึงข้อมูล Vendor Section
 export async function GET() {
   try {
-    const docRef = doc(db, 'vendor_content', 'vendor_section');
-    const docSnap = await getDoc(docRef);
+    const docRef = adminDb.collection('vendor_content').doc('vendor_section');
+    const docSnap = await docRef.get();
     
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       return NextResponse.json({
         success: true,
         data: docSnap.data()
@@ -40,8 +39,8 @@ export async function GET() {
             description: "แพลตฟอร์มที่มั่นคงและปลอดภัย"
           }
         ],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       
       return NextResponse.json({
@@ -82,20 +81,25 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const docRef = doc(db, 'vendor_content', 'vendor_section');
+    const docRef = adminDb.collection('vendor_content').doc('vendor_section');
     const updateData = {
       title,
       subtitle,
       features,
-      updatedAt: serverTimestamp()
+      updatedAt: getServerTimestamp()
     };
 
-    await setDoc(docRef, updateData, { merge: true });
+    await docRef.set(updateData, { merge: true });
 
     return NextResponse.json({
       success: true,
       message: 'Vendor content updated successfully',
-      data: updateData
+      data: {
+        title,
+        subtitle,
+        features,
+        updatedAt: new Date().toISOString()
+      }
     });
   } catch (error) {
     console.error('Error updating vendor content:', error);

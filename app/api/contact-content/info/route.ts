@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/firebase/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { adminDb, getServerTimestamp } from '@/lib/firebase-admin';
 
 // GET - ดึงข้อมูลติดต่อ
 export async function GET() {
   try {
-    const docRef = doc(db, 'contact_info', 'company_contact');
-    const docSnap = await getDoc(docRef);
+    const docRef = adminDb.collection('contact_info').doc('company_contact');
+    const docSnap = await docRef.get();
     
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       return NextResponse.json({
         success: true,
         data: docSnap.data()
@@ -29,8 +28,8 @@ export async function GET() {
           line: "@ssssupply",
           facebook: "MTP Supply Thailand"
         },
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       
       return NextResponse.json({
@@ -63,20 +62,25 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const docRef = doc(db, 'contact_info', 'company_contact');
+    const docRef = adminDb.collection('contact_info').doc('company_contact');
     const updateData = {
       phones,
       emails,
       social,
-      updatedAt: serverTimestamp()
+      updatedAt: getServerTimestamp()
     };
 
-    await setDoc(docRef, updateData, { merge: true });
+    await docRef.set(updateData, { merge: true });
 
     return NextResponse.json({
       success: true,
       message: 'Contact info updated successfully',
-      data: updateData
+      data: {
+        phones,
+        emails,
+        social,
+        updatedAt: new Date().toISOString()
+      }
     });
   } catch (error) {
     console.error('Error updating contact info:', error);

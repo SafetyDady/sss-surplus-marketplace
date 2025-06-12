@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/firebase/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { adminDb, getServerTimestamp } from '@/lib/firebase-admin';
 
 // GET - ดึงข้อมูล Hero Section
 export async function GET() {
   try {
-    const docRef = doc(db, 'contact_page_content', 'hero_section');
-    const docSnap = await getDoc(docRef);
+    const docRef = adminDb.collection('contact_page_content').doc('hero_section');
+    const docSnap = await docRef.get();
     
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       return NextResponse.json({
         success: true,
         data: docSnap.data()
@@ -18,8 +17,8 @@ export async function GET() {
       const defaultData = {
         title: "ติดต่อเรา",
         subtitle: "พร้อมให้บริการและตอบทุกข้อสงสัยเกี่ยวกับสินค้า Surplus คุณภาพดี",
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       
       return NextResponse.json({
@@ -49,19 +48,23 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const docRef = doc(db, 'contact_page_content', 'hero_section');
+    const docRef = adminDb.collection('contact_page_content').doc('hero_section');
     const updateData = {
       title,
       subtitle,
-      updatedAt: serverTimestamp()
+      updatedAt: getServerTimestamp()
     };
 
-    await setDoc(docRef, updateData, { merge: true });
+    await docRef.set(updateData, { merge: true });
 
     return NextResponse.json({
       success: true,
       message: 'Hero section updated successfully',
-      data: updateData
+      data: {
+        title,
+        subtitle,
+        updatedAt: new Date().toISOString()
+      }
     });
   } catch (error) {
     console.error('Error updating hero section:', error);
