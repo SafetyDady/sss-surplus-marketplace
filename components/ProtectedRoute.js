@@ -16,6 +16,15 @@ const ProtectedRoute = ({ children, requiredPermission = null }) => {
         return;
       }
 
+      // ตรวจสอบว่าเป็น Super Admin หรือไม่
+      const isSuperAdmin = adminData?.role === 'super_admin';
+      
+      // ถ้าเป็น Super Admin ให้เข้าถึงได้เสมอ
+      if (isSuperAdmin) {
+        return;
+      }
+
+      // ตรวจสอบ permission สำหรับ admin ทั่วไป
       if (requiredPermission && adminData) {
         const hasPermission = adminData.permissions?.includes('all') || 
                             adminData.permissions?.includes(requiredPermission);
