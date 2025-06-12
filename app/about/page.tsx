@@ -2,54 +2,70 @@
 
 import React, { useState, useEffect } from 'react';
 
+interface Value {
+  title: string;
+  description: string;
+  icon: string;
+}
+
 interface TeamMember {
   id: string;
   name: string;
   position: string;
-  image: string;
+  description?: string;
+  avatar?: string;
   visible: boolean;
+}
+
+interface Statistics {
+  customers: string;
+  partners: string;
+  serviceHours: string;
+  yearsOfExperience: string;
 }
 
 interface AboutData {
   companyName: string;
-  foundedYear: number;
+  foundedYear: string | number;
   description: string;
   history: string;
   mission: string;
   vision: string;
-  values: string[];
+  values: Value[];
   teamMembers: TeamMember[];
-  statistics: {
-    customers: string;
-    partners: string;
-    serviceHours: string;
-    yearsOfExperience: string;
-  };
+  statistics: Statistics;
 }
 
 export default function AboutPage() {
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAboutData();
   }, []);
 
   const fetchAboutData = async () => {
+    setLoading(true);
     try {
       const response = await fetch('/api/about-us');
-      const result = await response.json();
       
-      if (result.success) {
-        setAboutData(result.data);
-      } else {
-        setError(true);
-        console.error('Failed to fetch about data:', result.error);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
       }
-    } catch (error) {
-      console.error('Error fetching about data:', error);
-      setError(true);
+      
+      const data = await response.json();
+      
+      // Validate data structure before using
+      if (!data) {
+        throw new Error('No data received from API');
+      }
+      
+      setAboutData(data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching about data:', err);
+      setError('ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง');
     } finally {
       setLoading(false);
     }
@@ -69,8 +85,16 @@ export default function AboutPage() {
   if (error || !aboutData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">ไม่สามารถโหลดข้อมูลได้</p>
+        <div className="text-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">ไม่สามารถโหลดข้อมูลได้</h2>
+          <p className="text-gray-600 mb-4">{error || 'กรุณาลองใหม่อีกครั้งในภายหลัง'}</p>
+          <button 
+            onClick={() => fetchAboutData()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            ลองใหม่อีกครั้ง
+          </button>
         </div>
       </div>
     );
@@ -126,25 +150,25 @@ export default function AboutPage() {
             </div>
             <div className="bg-gradient-to-br from-blue-100 to-purple-100 p-8 rounded-2xl">
               <div className="grid grid-cols-2 gap-6">
-                {aboutData.statistics.customers && (
+                {aboutData.statistics?.customers && (
                   <div className="text-center">
                     <div className="text-3xl font-bold text-blue-600">{aboutData.statistics.customers}</div>
                     <div className="text-gray-600">ลูกค้า</div>
                   </div>
                 )}
-                {aboutData.statistics.partners && (
+                {aboutData.statistics?.partners && (
                   <div className="text-center">
                     <div className="text-3xl font-bold text-purple-600">{aboutData.statistics.partners}</div>
                     <div className="text-gray-600">พาร์ทเนอร์</div>
                   </div>
                 )}
-                {aboutData.statistics.yearsOfExperience && (
+                {aboutData.statistics?.yearsOfExperience && (
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600">{aboutData.statistics.yearsOfExperience}</div>
                     <div className="text-gray-600">ปีประสบการณ์</div>
                   </div>
                 )}
-                {aboutData.statistics.serviceHours && (
+                {aboutData.statistics?.serviceHours && (
                   <div className="text-center">
                     <div className="text-3xl font-bold text-orange-600">{aboutData.statistics.serviceHours}</div>
                     <div className="text-gray-600">ชั่วโมงบริการ</div>
@@ -191,8 +215,9 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-3 gap-8">
               {aboutData.values.map((value, index) => (
                 <div key={index} className="text-center p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl">
-                  <div className="text-3xl mb-4">💎</div>
-                  <p className="text-gray-700 font-medium">{value}</p>
+                  <div className="text-3xl mb-4">{value.icon || '💎'}</div>
+                  <h3 className="text-lg font-bold text-gray-800 mb-2">{value.title}</h3>
+                  <p className="text-gray-700">{value.description}</p>
                 </div>
               ))}
             </div>
@@ -212,15 +237,18 @@ export default function AboutPage() {
               visibleTeamMembers.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
               'md:grid-cols-3'
             }`}>
-              {visibleTeamMembers.map((member, index) => (
+              {visibleTeamMembers.map((member) => (
                 <div key={member.id} className="bg-white p-8 rounded-2xl shadow-lg text-center">
                   <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full mx-auto mb-6 flex items-center justify-center">
                     <span className="text-2xl font-bold text-blue-600">
-                      {member.name.charAt(0)}
+                      {member.avatar || member.name.charAt(0)}
                     </span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-800 mb-2">{member.name}</h3>
-                  <p className="text-blue-600 font-medium">{member.position}</p>
+                  <p className="text-blue-600 font-medium mb-3">{member.position}</p>
+                  {member.description && (
+                    <p className="text-gray-600 text-sm">{member.description}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -246,4 +274,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
