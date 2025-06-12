@@ -307,25 +307,113 @@ const ContactPage = () => {
           border-bottom: none;
         }
 
-        /* Contact Page Styles */
+        /* Hero Section */
         .contact-hero {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          padding: 4rem 0;
+          padding: 2rem 0;
           text-align: center;
         }
 
         .contact-hero h1 {
-          font-size: 3rem;
-          margin-bottom: 1rem;
+          font-size: 2.5rem;
+          margin-bottom: 0.5rem;
           font-weight: 700;
         }
 
         .contact-hero p {
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           max-width: 600px;
           margin: 0 auto;
           opacity: 0.9;
+        }
+
+        /* Vendor Section - Now at the top */
+        .vendor-section {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          margin: 2rem auto;
+          max-width: 1200px;
+          padding: 2rem;
+          border-radius: 20px;
+          color: white;
+          text-align: center;
+          box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        }
+
+        .vendor-section h2 {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .vendor-section .subtitle {
+          margin-bottom: 2rem;
+          opacity: 0.9;
+          font-size: 1.1rem;
+          line-height: 1.6;
+        }
+
+        .vendor-features {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .vendor-feature {
+          background: rgba(255,255,255,0.15);
+          padding: 1.5rem;
+          border-radius: 12px;
+          text-align: center;
+          transition: transform 0.3s, background 0.3s;
+          backdrop-filter: blur(10px);
+        }
+
+        .vendor-feature:hover {
+          transform: translateY(-5px);
+          background: rgba(255,255,255,0.2);
+        }
+
+        .vendor-feature-icon {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+          display: block;
+        }
+
+        .vendor-feature h3 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        }
+
+        .vendor-feature p {
+          font-size: 0.9rem;
+          opacity: 0.9;
+        }
+
+        .vendor-btn {
+          background: white;
+          color: #059669;
+          padding: 1rem 2.5rem;
+          border: none;
+          border-radius: 12px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .vendor-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
         .contact-container {
@@ -542,7 +630,7 @@ const ContactPage = () => {
           }
 
           .contact-hero h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
           }
 
           .contact-container {
@@ -614,6 +702,39 @@ const ContactPage = () => {
           <p>พร้อมให้บริการและตอบทุกข้อสงสัยเกี่ยวกับสินค้า Surplus คุณภาพดี</p>
         </div>
       </section>
+
+      {/* Vendor Section - Moved to top */}
+      <div className="vendor-section">
+        <h2>🤝 สนใจเป็น Vendor กับเรา?</h2>
+        <p className="subtitle">เข้าร่วมเป็นพาร์ทเนอร์กับเราในการจำหน่ายสินค้า Surplus คุณภาพดี เพิ่มช่องทางขายและเพิ่มรายได้ของคุณ</p>
+        
+        <div className="vendor-features">
+          <div className="vendor-feature">
+            <span className="vendor-feature-icon">🌟</span>
+            <h3>เข้าถึงลูกค้าใหม่</h3>
+            <p>เพิ่มฐานลูกค้าและขยายตลาด</p>
+          </div>
+          <div className="vendor-feature">
+            <span className="vendor-feature-icon">💰</span>
+            <h3>เพิ่มรายได้</h3>
+            <p>สร้างรายได้เสริมจากสินค้าคงเหลือ</p>
+          </div>
+          <div className="vendor-feature">
+            <span className="vendor-feature-icon">🚀</span>
+            <h3>ง่ายต่อการจัดการ</h3>
+            <p>ระบบจัดการที่ใช้งานง่าย</p>
+          </div>
+          <div className="vendor-feature">
+            <span className="vendor-feature-icon">💎</span>
+            <h3>ความน่าเชื่อถือ</h3>
+            <p>แพลตฟอร์มที่มั่นคงและปลอดภัย</p>
+          </div>
+        </div>
+        
+        <a href="/vendor-registration" className="vendor-btn">
+          🌸 สมัครเป็น Vendor
+        </a>
+      </div>
 
       {/* Contact Content */}
       <div className="contact-container">
@@ -733,35 +854,6 @@ const ContactPage = () => {
             <p>Line ID: @ssssupply</p>
             <p>Facebook: MTP Supply Thailand</p>
           </div>
-        </div>
-
-        {/* Vendor Section */}
-        <div className="vendor-section">
-          <h2>🤝 สนใจเป็น Vendor กับเรา?</h2>
-          <p>เข้าร่วมเป็นพาร์ทเนอร์กับเราในการจำหน่ายสินค้า Surplus คุณภาพดี เพิ่มช่องทางขายและเพิ่มรายได้ของคุณ</p>
-          
-          <div className="vendor-features">
-            <div className="vendor-feature">
-              <div className="vendor-feature-icon">🌟</div>
-              <div>เข้าถึงลูกค้าใหม่</div>
-            </div>
-            <div className="vendor-feature">
-              <div className="vendor-feature-icon">💰</div>
-              <div>เพิ่มรายได้</div>
-            </div>
-            <div className="vendor-feature">
-              <div className="vendor-feature-icon">🚀</div>
-              <div>ง่ายต่อการจัดการ</div>
-            </div>
-            <div className="vendor-feature">
-              <div className="vendor-feature-icon">💎</div>
-              <div>ความน่าเชื่อถือ</div>
-            </div>
-          </div>
-          
-          <a href="/vendor-registration" className="vendor-btn">
-            🌸 สมัครเป็น Vendor
-          </a>
         </div>
       </div>
     </div>
