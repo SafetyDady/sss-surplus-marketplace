@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
+import { db } from '@/firebase/firebase';
 import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 
 // GET - ดึงรายการหัวข้อทั้งหมด

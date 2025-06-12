@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
+import { db } from '@/firebase/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 // GET - ดึงข้อมูลติดต่อ
