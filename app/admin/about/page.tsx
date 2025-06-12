@@ -2,74 +2,125 @@
 
 import React, { useState, useEffect } from 'react';
 
-export default function AdminAboutPage() {
-  const [activeTab, setActiveTab] = useState('story');
-  const [formData, setFormData] = useState({
-    story: {
-      title: 'เรื่องราวของเรา',
-      paragraph1: 'MTP Supply ก่อตั้งขึ้นในปี 2014 ด้วยวิสัยทัศน์ในการเป็นผู้นำด้านการจัดหาสินค้าคุณภาพสูง เราเริ่มต้นจากธุรกิจขนาดเล็กและเติบโตมาเป็นบริษัทชั้นนำที่มีเครือข่ายกว้างขวางทั่วประเทศ',
-      paragraph2: 'ด้วยความมุ่งมั่นในการให้บริการที่เป็นเลิศและการสร้างความสัมพันธ์ที่ยั่งยืนกับลูกค้า เราได้รับความไว้วางใจจากพันธมิตรทางธุรกิจและลูกค้ามากมายทั่วประเทศ'
-    },
-    mission: {
-      missionText: 'มุ่งมั่นในการจัดหาและจำหน่ายสินค้าคุณภาพสูงที่ตอบสนองความต้องการของลูกค้า ด้วยบริการที่เป็นเลิศและราคาที่เป็นธรรม เพื่อสร้างความพึงพอใจสูงสุดให้กับลูกค้า',
-      visionText: 'เป็นผู้นำด้านการจัดหาสินค้าในประเทศไทย ที่ได้รับการยอมรับในระดับสากล ด้วยนวัตกรรมและเทคโนโลยีที่ทันสมัย เพื่อสร้างอนาคตที่ยั่งยืนร่วมกัน'
-    },
-    values: [
-      { icon: '✅', title: 'คุณภาพ', description: 'มุ่งมั่นในการให้บริการและสินค้าที่มีคุณภาพสูงสุด' },
-      { icon: '🔒', title: 'ความน่าเชื่อถือ', description: 'สร้างความไว้วางใจผ่านการปฏิบัติที่โปร่งใสและซื่อสัตย์' },
-      { icon: '⚡', title: 'นวัตกรรม', description: 'พัฒนาและปรับปรุงอย่างต่อเนื่องเพื่อตอบสนองความต้องการ' },
-      { icon: '👥', title: 'การบริการ', description: 'ให้บริการด้วยใจและความเอาใจใส่ในทุกรายละเอียด' }
-    ],
-    team: [
-      { name: 'สมชาย วิทยากุล', position: 'ประธานเจ้าหน้าที่บริหาร', description: 'ประสบการณ์กว่า 15 ปีในอุตสาหกรรมการจัดหาสินค้า ผู้นำองค์กรด้วยวิสัยทัศน์และความเชี่ยวชาญ', avatar: 'สม' },
-      { name: 'อนุชา ธุรกิจดี', position: 'ผู้อำนวยการฝ่ายขาย', description: 'เชี่ยวชาญด้านการขายและการตลาด มีเครือข่ายลูกค้ากว้างขวางทั่วประเทศ', avatar: 'อน' },
-      { name: 'ประยุทธ คุณภาพดี', position: 'ผู้อำนวยการฝ่ายปฏิบัติการ', description: 'ผู้เชี่ยวชาญด้านการจัดการห่วงโซ่อุปทานและการควบคุมคุณภาพสินค้า', avatar: 'ปร' }
-    ],
-    stats: [
-      { number: '10+', label: 'ปีประสบการณ์' },
-      { number: '1000+', label: 'ลูกค้าพึงพอใจ' },
-      { number: '50+', label: 'พันธมิตรทางธุรกิจ' },
-      { number: '24/7', label: 'บริการลูกค้า' }
-    ]
+export default function AboutUsManagement() {
+  const [aboutUsData, setAboutUsData] = useState({
+    companyName: '',
+    foundedYear: '',
+    description: '',
+    history: '',
+    mission: '',
+    vision: '',
+    values: [],
+    teamMembers: [],
+    statistics: {
+      customers: '',
+      partners: '',
+      serviceHours: '',
+      yearsOfExperience: ''
+    }
   });
 
-  // Load data from localStorage on component mount
+  const [activeTab, setActiveTab] = useState('company');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // Load data from API
   useEffect(() => {
-    const savedData = localStorage.getItem('aboutUsData');
-    if (savedData) {
-      setFormData(JSON.parse(savedData));
-    }
+    fetchAboutUsData();
   }, []);
 
-  // Save data to localStorage
-  const saveData = (section) => {
-    localStorage.setItem('aboutUsData', JSON.stringify(formData));
-    alert(`บันทึกข้อมูล${section}เรียบร้อยแล้ว`);
-  };
-
-  // Handle form input changes
-  const handleInputChange = (section, field, value, index = null) => {
-    setFormData(prev => {
-      const newData = { ...prev };
-      if (index !== null) {
-        newData[section][index][field] = value;
-      } else {
-        newData[section][field] = value;
+  const fetchAboutUsData = async () => {
+    try {
+      const response = await fetch('/api/about-us');
+      if (response.ok) {
+        const data = await response.json();
+        setAboutUsData(data);
       }
-      return newData;
-    });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Preview function
-  const previewAboutUs = () => {
-    window.open('/about', '_blank');
+  const saveData = async () => {
+    setSaving(true);
+    try {
+      const response = await fetch('/api/about-us', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(aboutUsData),
+      });
+
+      if (response.ok) {
+        alert('บันทึกข้อมูลเรียบร้อยแล้ว!');
+      } else {
+        alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+      alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  // Publish function
-  const publishChanges = () => {
-    localStorage.setItem('aboutUsData', JSON.stringify(formData));
-    alert('เผยแพร่การเปลี่ยนแปลงเรียบร้อยแล้ว!');
+  const addValue = () => {
+    const newValues = [...(aboutUsData.values || []), { icon: '', title: '', description: '' }];
+    setAboutUsData({ ...aboutUsData, values: newValues });
   };
+
+  const updateValue = (index, field, value) => {
+    const newValues = [...(aboutUsData.values || [])];
+    newValues[index] = { ...newValues[index], [field]: value };
+    setAboutUsData({ ...aboutUsData, values: newValues });
+  };
+
+  const removeValue = (index) => {
+    const newValues = (aboutUsData.values || []).filter((_, i) => i !== index);
+    setAboutUsData({ ...aboutUsData, values: newValues });
+  };
+
+  const addTeamMember = () => {
+    const newMembers = [...(aboutUsData.teamMembers || []), { 
+      name: '', 
+      position: '', 
+      bio: '', 
+      image: '', 
+      visible: true 
+    }];
+    setAboutUsData({ ...aboutUsData, teamMembers: newMembers });
+  };
+
+  const updateTeamMember = (index, field, value) => {
+    const newMembers = [...(aboutUsData.teamMembers || [])];
+    newMembers[index] = { ...newMembers[index], [field]: value };
+    setAboutUsData({ ...aboutUsData, teamMembers: newMembers });
+  };
+
+  const removeTeamMember = (index) => {
+    const newMembers = (aboutUsData.teamMembers || []).filter((_, i) => i !== index);
+    setAboutUsData({ ...aboutUsData, teamMembers: newMembers });
+  };
+
+  const toggleMemberVisibility = (index) => {
+    const newMembers = [...(aboutUsData.teamMembers || [])];
+    newMembers[index] = { ...newMembers[index], visible: !newMembers[index].visible };
+    setAboutUsData({ ...aboutUsData, teamMembers: newMembers });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">กำลังโหลดข้อมูล...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -81,22 +132,29 @@ export default function AdminAboutPage() {
               <h1 className="text-2xl font-bold text-gray-900">จัดการหน้า About Us</h1>
               <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">Admin Panel</span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex space-x-3">
               <button
-                onClick={previewAboutUs}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+                onClick={addValue}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                +เพิ่มข้อมูล
+              </button>
+              <button
+                onClick={() => window.open('/about', '_blank')}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 👁️ ดูตัวอย่าง
               </button>
               <button
-                onClick={publishChanges}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+                onClick={saveData}
+                disabled={saving}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                🚀 เผยแพร่
+                {saving ? '💾 กำลังบันทึก...' : '💾 บันทึกข้อมูล'}
               </button>
               <a
                 href="/admin"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 ← กลับ Dashboard
               </a>
@@ -105,110 +163,158 @@ export default function AdminAboutPage() {
         </div>
       </header>
 
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tab Navigation */}
-        <div className="bg-white rounded-lg shadow-sm mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { id: 'story', label: '📖 เรื่องราว', icon: '📖' },
-                { id: 'mission', label: '🎯 พันธกิจ & วิสัยทัศน์', icon: '🎯' },
-                { id: 'values', label: '💎 ค่านิยม', icon: '💎' },
-                { id: 'team', label: '👥 ทีมงาน', icon: '👥' },
-                { id: 'stats', label: '📊 สถิติ', icon: '📊' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-          </div>
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-8">
+          <button
+            onClick={() => setActiveTab('company')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'company'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            🏢 ข้อมูลบริษัท
+          </button>
+          <button
+            onClick={() => setActiveTab('mission')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'mission'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            🎯 พันธกิจ & วิสัยทัศน์
+          </button>
+          <button
+            onClick={() => setActiveTab('values')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'values'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            💎 ค่านิยม
+          </button>
+          <button
+            onClick={() => setActiveTab('team')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'team'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            👥 ทีมงาน
+          </button>
+          <button
+            onClick={() => setActiveTab('statistics')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'statistics'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            📊 สถิติ
+          </button>
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          {/* Story Tab */}
-          {activeTab === 'story' && (
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          {/* Company Tab */}
+          {activeTab === 'company' && (
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">จัดการเรื่องราวของเรา</h2>
+              <h2 className="text-xl font-bold text-gray-900">ข้อมูลบริษัท</h2>
               
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ชื่อบริษัท</label>
+                  <input
+                    type="text"
+                    value={aboutUsData.companyName}
+                    onChange={(e) => setAboutUsData({ ...aboutUsData, companyName: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="ชื่อบริษัท"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ปีที่ก่อตั้ง</label>
+                  <input
+                    type="number"
+                    value={aboutUsData.foundedYear}
+                    onChange={(e) => setAboutUsData({ ...aboutUsData, foundedYear: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="2024"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">หัวข้อหลัก</label>
-                <input
-                  type="text"
-                  value={formData.story.title}
-                  onChange={(e) => handleInputChange('story', 'title', e.target.value)}
+                <label className="block text-sm font-medium text-gray-700 mb-2">คำอธิบายบริษัท</label>
+                <textarea
+                  value={aboutUsData.description}
+                  onChange={(e) => setAboutUsData({ ...aboutUsData, description: e.target.value })}
+                  rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="คำอธิบายสั้นๆ เกี่ยวกับบริษัท"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ย่อหน้าที่ 1</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">ประวัติบริษัท</label>
                 <textarea
-                  rows={4}
-                  value={formData.story.paragraph1}
-                  onChange={(e) => handleInputChange('story', 'paragraph1', e.target.value)}
+                  value={aboutUsData.history}
+                  onChange={(e) => setAboutUsData({ ...aboutUsData, history: e.target.value })}
+                  rows={5}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ย่อหน้าที่ 2</label>
-                <textarea
-                  rows={4}
-                  value={formData.story.paragraph2}
-                  onChange={(e) => handleInputChange('story', 'paragraph2', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="ประวัติและการเริ่มต้นของบริษัท"
                 />
               </div>
 
               <button
-                onClick={() => saveData('เรื่องราว')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                onClick={saveData}
+                disabled={saving}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md font-medium transition-colors"
               >
-                💾 บันทึกเรื่องราว
+                {saving ? '💾 กำลังบันทึก...' : '💾 บันทึกการเปลี่ยนแปลง'}
               </button>
             </div>
           )}
 
-          {/* Mission & Vision Tab */}
+          {/* Mission Tab */}
           {activeTab === 'mission' && (
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">จัดการพันธกิจ & วิสัยทัศน์</h2>
+              <h2 className="text-xl font-bold text-gray-900">พันธกิจ & วิสัยทัศน์</h2>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">พันธกิจ</label>
                 <textarea
+                  value={aboutUsData.mission}
+                  onChange={(e) => setAboutUsData({ ...aboutUsData, mission: e.target.value })}
                   rows={4}
-                  value={formData.mission.missionText}
-                  onChange={(e) => handleInputChange('mission', 'missionText', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="พันธกิจของบริษัท"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">วิสัยทัศน์</label>
                 <textarea
+                  value={aboutUsData.vision}
+                  onChange={(e) => setAboutUsData({ ...aboutUsData, vision: e.target.value })}
                   rows={4}
-                  value={formData.mission.visionText}
-                  onChange={(e) => handleInputChange('mission', 'visionText', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="วิสัยทัศน์ของบริษัท"
                 />
               </div>
 
               <button
-                onClick={() => saveData('พันธกิจ & วิสัยทัศน์')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                onClick={saveData}
+                disabled={saving}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md font-medium transition-colors"
               >
-                💾 บันทึกพันธกิจ & วิสัยทัศน์
+                {saving ? '💾 กำลังบันทึก...' : '💾 บันทึกการเปลี่ยนแปลง'}
               </button>
             </div>
           )}
@@ -216,20 +322,37 @@ export default function AdminAboutPage() {
           {/* Values Tab */}
           {activeTab === 'values' && (
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">จัดการค่านิยมองค์กร</h2>
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-900">ค่านิยมองค์กร</h2>
+                <button
+                  onClick={addValue}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  + เพิ่มค่านิยม
+                </button>
+              </div>
               
-              {formData.values.map((value, index) => (
+              {(aboutUsData.values || []).map((value, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-4">ค่านิยมที่ {index + 1}</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-medium text-gray-900">ค่านิยมที่ {index + 1}</h3>
+                    <button
+                      onClick={() => removeValue(index)}
+                      className="text-red-600 hover:text-red-800 text-sm"
+                    >
+                      ลบ
+                    </button>
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">ไอคอน</label>
                       <input
                         type="text"
-                        value={value.icon}
-                        onChange={(e) => handleInputChange('values', 'icon', e.target.value, index)}
+                        value={value.icon || ''}
+                        onChange={(e) => updateValue(index, 'icon', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="🎯"
                       />
                     </div>
                     
@@ -237,19 +360,21 @@ export default function AdminAboutPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">หัวข้อ</label>
                       <input
                         type="text"
-                        value={value.title}
-                        onChange={(e) => handleInputChange('values', 'title', e.target.value, index)}
+                        value={value.title || ''}
+                        onChange={(e) => updateValue(index, 'title', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="ชื่อค่านิยม"
                       />
                     </div>
                     
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">คำอธิบาย</label>
                       <textarea
+                        value={value.description || ''}
+                        onChange={(e) => updateValue(index, 'description', e.target.value)}
                         rows={2}
-                        value={value.description}
-                        onChange={(e) => handleInputChange('values', 'description', e.target.value, index)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="คำอธิบายค่านิยม"
                       />
                     </div>
                   </div>
@@ -257,10 +382,11 @@ export default function AdminAboutPage() {
               ))}
 
               <button
-                onClick={() => saveData('ค่านิยม')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                onClick={saveData}
+                disabled={saving}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md font-medium transition-colors"
               >
-                💾 บันทึกค่านิยม
+                {saving ? '💾 กำลังบันทึก...' : '💾 บันทึกการเปลี่ยนแปลง'}
               </button>
             </div>
           )}
@@ -268,20 +394,48 @@ export default function AdminAboutPage() {
           {/* Team Tab */}
           {activeTab === 'team' && (
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">จัดการทีมผู้บริหาร</h2>
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-900">ทีมผู้บริหาร</h2>
+                <button
+                  onClick={addTeamMember}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  + เพิ่มสมาชิก
+                </button>
+              </div>
               
-              {formData.team.map((member, index) => (
+              {(aboutUsData.teamMembers || []).map((member, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-4">สมาชิกทีมที่ {index + 1}</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-medium text-gray-900">สมาชิกทีมที่ {index + 1}</h3>
+                    <div className="flex items-center space-x-2">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={member.visible !== false}
+                          onChange={() => toggleMemberVisibility(index)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">แสดงในหน้าเว็บ</span>
+                      </label>
+                      <button
+                        onClick={() => removeTeamMember(index)}
+                        className="text-red-600 hover:text-red-800 text-sm"
+                      >
+                        ลบ
+                      </button>
+                    </div>
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">ชื่อ-นามสกุล</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">ชื่อ</label>
                       <input
                         type="text"
-                        value={member.name}
-                        onChange={(e) => handleInputChange('team', 'name', e.target.value, index)}
+                        value={member.name || ''}
+                        onChange={(e) => updateTeamMember(index, 'name', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="ชื่อสมาชิก"
                       />
                     </div>
                     
@@ -289,30 +443,32 @@ export default function AdminAboutPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">ตำแหน่ง</label>
                       <input
                         type="text"
-                        value={member.position}
-                        onChange={(e) => handleInputChange('team', 'position', e.target.value, index)}
+                        value={member.position || ''}
+                        onChange={(e) => updateTeamMember(index, 'position', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="ตำแหน่งงาน"
                       />
                     </div>
                     
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">อักษรย่อ (Avatar)</label>
-                      <input
-                        type="text"
-                        value={member.avatar}
-                        onChange={(e) => handleInputChange('team', 'avatar', e.target.value, index)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        maxLength={2}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">คำอธิบาย</label>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">ประวัติ</label>
                       <textarea
+                        value={member.bio || ''}
+                        onChange={(e) => updateTeamMember(index, 'bio', e.target.value)}
                         rows={3}
-                        value={member.description}
-                        onChange={(e) => handleInputChange('team', 'description', e.target.value, index)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="ประวัติและประสบการณ์"
+                      />
+                    </div>
+                    
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">URL รูปภาพ</label>
+                      <input
+                        type="url"
+                        value={member.image || ''}
+                        onChange={(e) => updateTeamMember(index, 'image', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="https://example.com/image.jpg"
                       />
                     </div>
                   </div>
@@ -320,73 +476,87 @@ export default function AdminAboutPage() {
               ))}
 
               <button
-                onClick={() => saveData('ทีมงาน')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                onClick={saveData}
+                disabled={saving}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md font-medium transition-colors"
               >
-                💾 บันทึกทีมงาน
+                {saving ? '💾 กำลังบันทึก...' : '💾 บันทึกการเปลี่ยนแปลง'}
               </button>
             </div>
           )}
 
-          {/* Stats Tab */}
-          {activeTab === 'stats' && (
+          {/* Statistics Tab */}
+          {activeTab === 'statistics' && (
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">จัดการสถิติองค์กร</h2>
+              <h2 className="text-xl font-bold text-gray-900">สถิติบริษัท</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {formData.stats.map((stat, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-4">สถิติที่ {index + 1}</h3>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">ตัวเลข</label>
-                        <input
-                          type="text"
-                          value={stat.number}
-                          onChange={(e) => handleInputChange('stats', 'number', e.target.value, index)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">ป้ายกำกับ</label>
-                        <input
-                          type="text"
-                          value={stat.label}
-                          onChange={(e) => handleInputChange('stats', 'label', e.target.value, index)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">จำนวนลูกค้า</label>
+                  <input
+                    type="text"
+                    value={aboutUsData.statistics?.customers || ''}
+                    onChange={(e) => setAboutUsData({ 
+                      ...aboutUsData, 
+                      statistics: { ...aboutUsData.statistics, customers: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="1000+"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">จำนวนพาร์ทเนอร์</label>
+                  <input
+                    type="text"
+                    value={aboutUsData.statistics?.partners || ''}
+                    onChange={(e) => setAboutUsData({ 
+                      ...aboutUsData, 
+                      statistics: { ...aboutUsData.statistics, partners: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="50+"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ชั่วโมงการให้บริการ</label>
+                  <input
+                    type="text"
+                    value={aboutUsData.statistics?.serviceHours || ''}
+                    onChange={(e) => setAboutUsData({ 
+                      ...aboutUsData, 
+                      statistics: { ...aboutUsData.statistics, serviceHours: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="10000+"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ปีของประสบการณ์</label>
+                  <input
+                    type="text"
+                    value={aboutUsData.statistics?.yearsOfExperience || ''}
+                    onChange={(e) => setAboutUsData({ 
+                      ...aboutUsData, 
+                      statistics: { ...aboutUsData.statistics, yearsOfExperience: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="10+"
+                  />
+                </div>
               </div>
 
               <button
-                onClick={() => saveData('สถิติ')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                onClick={saveData}
+                disabled={saving}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md font-medium transition-colors"
               >
-                💾 บันทึกสถิติ
+                {saving ? '💾 กำลังบันทึก...' : '💾 บันทึกการเปลี่ยนแปลง'}
               </button>
             </div>
           )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 flex justify-center space-x-4">
-          <button
-            onClick={previewAboutUs}
-            className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg transition-colors text-lg"
-          >
-            👁️ ดูตัวอย่างหน้าเว็บ
-          </button>
-          <button
-            onClick={publishChanges}
-            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg transition-colors text-lg"
-          >
-            🚀 เผยแพร่การเปลี่ยนแปลงทั้งหมด
-          </button>
         </div>
       </div>
     </div>
