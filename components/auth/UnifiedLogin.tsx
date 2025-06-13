@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../auth/AuthProvider'
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth'
 import { auth } from '../../firebase/firebase'
@@ -8,58 +8,117 @@ import { useRouter } from 'next/navigation'
 
 /*
 File: /components/auth/UnifiedLogin.tsx
-Version: 2.0 | 2025-06-13
-note: Added role-based redirect after login - Super Admin users are redirected to Super Admin Dashboard
+Version: 3.0 | 2025-06-13
+note: Enhanced redirect logic with debugging and state tracking to prevent redirect loops
 */
 
 export default function UnifiedLogin() {
   const { signInWithGoogle, user, role, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [debugInfo, setDebugInfo] = useState<string>('')
   const router = useRouter()
+  
+  // Use refs to track state changes and prevent redirect loops
+  const hasRedirected = useRef(false)
+  const redirectAttempts = useRef(0)
+  const lastRole = useRef<string | null>(null)
+  
+  // Add debug information
+  const addDebugInfo = (info: string) => {
+    console.log(`[DEBUG] ${info}`)
+    setDebugInfo(prev => `${prev}\n${new Date().toISOString()}: ${info}`)
+  }
   
   // Handle redirect based on user role after successful authentication
   useEffect(() => {
+    // Reset redirect flag when user changes
+    if (!user) {
+      hasRedirected.current = false
+      redirectAttempts.current = 0
+      lastRole.current = null
+      return
+    }
+    
+    // Track role changes
+    if (role !== lastRole.current) {
+      addDebugInfo(`Role changed from ${lastRole.current} to ${role}`)
+      lastRole.current = role
+    }
+    
+    // Only proceed if we have a user, role, and auth is not loading
     if (user && role && !authLoading) {
-      console.log('User authenticated with role:', role)
+      redirectAttempts.current += 1
+      addDebugInfo(`Redirect attempt ${redirectAttempts.current} with role: ${role}`)
       
-      // Redirect based on role
-      if (role === 'super_admin') {
-        console.log('Redirecting to Super Admin Dashboard')
-        router.replace('/admin/super/dashboard')
-      } else if (role === 'admin') {
-        console.log('Redirecting to Admin Dashboard')
-        router.replace('/admin/dashboard')
-      } else if (role === 'vendor') {
-        console.log('Redirecting to Vendor Dashboard')
-        router.replace('/vendor/dashboard')
-      } else {
-        console.log('Redirecting to Home')
-        router.replace('/')
+      // Prevent redirect loops by limiting attempts
+      if (redirectAttempts.current > 5) {
+        addDebugInfo(`Too many redirect attempts (${redirectAttempts.current}), stopping`)
+        return
       }
+      
+      // Prevent multiple redirects for the same session
+      if (hasRedirected.current) {
+        addDebugInfo('Already redirected for this session, skipping')
+        return
+      }
+      
+      addDebugInfo(`User authenticated with role: ${role}`)
+      
+      // Set a small delay to ensure state is stable
+      setTimeout(() => {
+        // Double-check that conditions are still valid
+        if (!user || !role || authLoading) {
+          addDebugInfo('Conditions changed during timeout, aborting redirect')
+          return
+        }
+        
+        // Redirect based on role
+        hasRedirected.current = true
+        
+        if (role === 'super_admin') {
+          addDebugInfo('Redirecting to Super Admin Dashboard')
+          window.location.href = '/admin/super/dashboard'
+        } else if (role === 'admin') {
+          addDebugInfo('Redirecting to Admin Dashboard')
+          window.location.href = '/admin/dashboard'
+        } else if (role === 'vendor') {
+          addDebugInfo('Redirecting to Vendor Dashboard')
+          window.location.href = '/vendor/dashboard'
+        } else {
+          addDebugInfo('Redirecting to Home')
+          window.location.href = '/'
+        }
+      }, 500)
     }
   }, [user, role, authLoading, router])
 
   const handleGoogleLogin = async () => {
-    console.log('Google login button clicked')
+    addDebugInfo('Google login button clicked')
     setLoading(true)
     setError(null)
     
     try {
-      console.log('Attempting Google login...')
+      addDebugInfo('Attempting Google login...')
       
       // Direct Firebase Auth approach as fallback
       const provider = new GoogleAuthProvider()
       provider.addScope('email')
       provider.addScope('profile')
       
+      // Reset redirect tracking on new login attempt
+      hasRedirected.current = false
+      redirectAttempts.current = 0
+      lastRole.current = null
+      
       const result = await signInWithPopup(auth, provider)
-      console.log('Google login successful:', result.user)
+      addDebugInfo(`Google login successful: ${result.user.email}`)
       
       // Redirect will be handled by the useEffect hook based on role
       
     } catch (error: any) {
       console.error('Google login error:', error)
+      addDebugInfo(`Login error: ${error.code} - ${error.message}`)
       
       if (error.code === 'auth/popup-closed-by-user') {
         setError('การเข้าสู่ระบบถูกยกเลิก')
@@ -67,6 +126,9 @@ export default function UnifiedLogin() {
         setError('Popup ถูกบล็อก กรุณาอนุญาต Popup สำหรับเว็บไซต์นี้')
       } else if (error.code === 'auth/network-request-failed') {
         setError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต')
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setError('โดเมนนี้ไม่ได้รับอนุญาตให้ใช้งาน Firebase Authentication กรุณาเพิ่มโดเมนนี้ใน Firebase Console')
+        addDebugInfo(`Current domain: ${window.location.hostname}`)
       } else {
         setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google: ' + (error.message || 'ไม่ทราบสาเหตุ'))
       }
@@ -114,6 +176,12 @@ export default function UnifiedLogin() {
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
+        </div>
+      )}
+      
+      {debugInfo && (
+        <div className="mb-4 p-3 bg-gray-100 border border-gray-300 text-gray-700 rounded text-xs overflow-auto max-h-40">
+          <pre>{debugInfo}</pre>
         </div>
       )}
 
