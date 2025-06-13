@@ -1,13 +1,19 @@
 'use client'
 
-import { ReactNode, createContext, useContext, useEffect, useState, useRef } from 'react'
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { auth } from '../../firebase/firebase'
 import { User, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
 
 /*
 File: /components/auth/AuthProvider.tsx
-Version: 3.1 | 2025-06-13
-note: Enhanced AuthProvider with robust token handling, improved claims extraction, better error recovery, and Super Admin support
+Version: 4.0 | 2025-06-13
+note: Simplified AuthProvider - Removed complex retry logic, race condition prevention, and multiple token refresh
+Changes:
+- Removed extractCustomClaims with retry mechanism
+- Removed verifyTokenWithBackend with concurrent prevention
+- Simplified to single API call per auth state change
+- Reduced from 200+ lines to ~80 lines
+- Improved performance and maintainability
 */
 
 type AuthContextType = {
@@ -32,169 +38,70 @@ export function useAuth() {
   return useContext(AuthContext)
 }
 
+// Simple API call to verify user and get role
+const verifyUserRole = async (user: User): Promise<{ role: string; permissions: string[] }> => {
+  try {
+    console.log('🔑 [Auth] Verifying user role for:', user.email)
+    
+    const idToken = await user.getIdToken()
+    
+    const response = await fetch('/api/auth/verify-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idToken }),
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      console.log('🔑 [Auth] Role verification successful:', data)
+      return {
+        role: data.role || 'user',
+        permissions: data.permissions || []
+      }
+    } else {
+      console.error('🔑 [Auth] Role verification failed:', response.status)
+      return { role: 'user', permissions: [] }
+    }
+  } catch (error) {
+    console.error('🔑 [Auth] Error verifying user role:', error)
+    return { role: 'user', permissions: [] }
+  }
+}
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [role, setRole] = useState<string | null>(null)
   const [permissions, setPermissions] = useState<string[] | null>(null)
   const [loading, setLoading] = useState(true)
-  
-  // Use refs to track token verification attempts and prevent duplicate calls
-  const verifyingToken = useRef(false)
-  const verificationAttempts = useRef(0)
-  const maxVerificationAttempts = 3
 
-  // Extract custom claims from user's ID token with enhanced retry mechanism
-  const extractCustomClaims = async (user: User, retryCount = 0, maxRetries = 5) => {
-    try {
-      console.log(`🔑 [Auth] Extracting custom claims (attempt ${retryCount + 1}/${maxRetries})...`)
-      
-      // Force token refresh to ensure we get the latest claims
-      await user.getIdToken(true)
-      
-      const idTokenResult = await user.getIdTokenResult()
-      const customClaims = idTokenResult.claims
-      
-      console.log('🔑 [Auth] Custom claims extracted:', {
-        role: customClaims.role || 'not set',
-        permissions: customClaims.permissions || 'not set',
-        updatedAt: customClaims.updatedAt || 'not set'
-      })
-      
-      // If role is missing but we haven't exceeded max retries, try again
-      if (!customClaims.role && retryCount < maxRetries) {
-        console.log(`🔑 [Auth] Role not found in claims, retrying... (${retryCount + 1}/${maxRetries})`)
-        // Wait longer between retries to allow Firebase to propagate claims
-        const delay = Math.min(1000 * Math.pow(2, retryCount), 10000) // Exponential backoff with max 10s
-        console.log(`🔑 [Auth] Waiting ${delay}ms before retry...`)
-        await new Promise(resolve => setTimeout(resolve, delay))
-        return extractCustomClaims(user, retryCount + 1, maxRetries)
-      }
-      
-      // Set role and permissions with fallbacks
-      const extractedRole = customClaims.role || 'user'
-      const extractedPermissions = customClaims.permissions || []
-      
-      setRole(extractedRole)
-      setPermissions(extractedPermissions)
-      
-      console.log(`🔑 [Auth] Final role set: ${extractedRole}`)
-      
-      return { role: extractedRole, permissions: extractedPermissions }
-    } catch (error) {
-      console.error('🔑 [Auth] Error extracting custom claims:', error)
-      
-      // If we haven't exceeded max retries, try again
-      if (retryCount < maxRetries) {
-        console.log(`🔑 [Auth] Retrying after error... (${retryCount + 1}/${maxRetries})`)
-        const delay = Math.min(1000 * Math.pow(2, retryCount), 10000)
-        await new Promise(resolve => setTimeout(resolve, delay))
-        return extractCustomClaims(user, retryCount + 1, maxRetries)
-      }
-      
-      // Set default role and permissions as fallback
-      console.log('🔑 [Auth] Using fallback role: user')
-      setRole('user')
-      setPermissions([])
-      return { role: 'user', permissions: [] }
-    }
-  }
-
-  // Verify token with backend and update claims
-  const verifyTokenWithBackend = async (user: User): Promise<boolean> => {
-    // Prevent concurrent verification attempts
-    if (verifyingToken.current) {
-      console.log('🔑 [Auth] Token verification already in progress, skipping...')
-      return false
-    }
-    
-    verifyingToken.current = true
-    verificationAttempts.current += 1
-    
-    try {
-      console.log('🔑 [Auth] Sending ID token to backend for verification...')
-      const idToken = await user.getIdToken()
-      
-      const response = await fetch('/api/auth/verify-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      })
-      
-      if (response.ok) {
-        const responseData = await response.json()
-        console.log('🔑 [Auth] Backend verification successful:', responseData)
-        
-        // Wait to allow Firebase to update the token
-        const delay = 2000 // 2 seconds
-        console.log(`🔑 [Auth] Waiting ${delay}ms for token propagation...`)
-        await new Promise(resolve => setTimeout(resolve, delay))
-        
-        verifyingToken.current = false
-        return true
-      } else {
-        const errorData = await response.json()
-        console.error('🔑 [Auth] Backend verification failed:', errorData)
-        
-        verifyingToken.current = false
-        return false
-      }
-    } catch (error) {
-      console.error('🔑 [Auth] Error during token verification:', error)
-      verifyingToken.current = false
-      return false
-    }
-  }
-
-  // Monitor auth state changes
+  // Monitor auth state changes - simplified version
   useEffect(() => {
     console.log('🔑 [Auth] Setting up auth state listener...')
     
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       console.log('🔑 [Auth] Auth state changed:', fbUser ? `User logged in: ${fbUser.email}` : 'User logged out')
-      setUser(fbUser)
       
       if (fbUser) {
         setLoading(true)
+        setUser(fbUser)
         
-        try {
-          // Reset verification attempts on new login
-          verificationAttempts.current = 0
-          
-          // Verify token with backend
-          const verificationSuccess = await verifyTokenWithBackend(fbUser)
-          
-          if (verificationSuccess) {
-            // Extract custom claims with retry mechanism
-            const claimsResult = await extractCustomClaims(fbUser)
-            console.log('🔑 [Auth] Final claims result:', claimsResult)
-          } else if (verificationAttempts.current < maxVerificationAttempts) {
-            // Retry verification if failed
-            console.log(`🔑 [Auth] Verification failed, retrying... (${verificationAttempts.current}/${maxVerificationAttempts})`)
-            const delay = 2000
-            await new Promise(resolve => setTimeout(resolve, delay))
-            await verifyTokenWithBackend(fbUser)
-            await extractCustomClaims(fbUser)
-          } else {
-            console.error('🔑 [Auth] Max verification attempts reached, using fallback role')
-            setRole('user')
-            setPermissions([])
-          }
-        } catch (error) {
-          console.error('🔑 [Auth] Critical error in auth flow:', error)
-          // Set fallback role
-          setRole('user')
-          setPermissions([])
-        }
+        // Single API call to verify user and get role
+        const { role: userRole, permissions: userPermissions } = await verifyUserRole(fbUser)
         
-        setLoading(false)
+        setRole(userRole)
+        setPermissions(userPermissions)
+        
+        console.log(`🔑 [Auth] User role set: ${userRole}`)
       } else {
         // Clear user state on logout
+        setUser(null)
         setRole(null)
         setPermissions(null)
-        setLoading(false)
       }
+      
+      setLoading(false)
     })
     
     return () => {
@@ -214,13 +121,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const result = await signInWithPopup(auth, provider)
       const user = result.user
       console.log('🔑 [Auth] Google sign in successful:', user.email)
-      setUser(user)
+      
+      // Note: onAuthStateChanged will handle the role verification
       return user
     } catch (error) {
       console.error('🔑 [Auth] Error signing in with Google:', error)
-      return null
-    } finally {
       setLoading(false)
+      return null
     }
   }
 
@@ -228,9 +135,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     try {
       await signOut(auth)
-      setUser(null)
-      setRole(null)
-      setPermissions(null)
       console.log('🔑 [Auth] User signed out successfully')
     } catch (error) {
       console.error('🔑 [Auth] Error signing out:', error)
