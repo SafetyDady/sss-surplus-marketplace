@@ -1,12 +1,37 @@
 'use client'
 
+import UserStatusHeader from '../admin/UserStatusHeader'
+import { useAuth } from '../auth/AuthProvider'
+
 /*
 File: /components/layout/AdminHeader.tsx
-Version: 3.0 | 2025-06-04
+Version: 4.0 | 2025-06-13
 note: Header กลาง gradient ม่วง/navy เต็มจอ, container max-w-6xl, โลโก้, search, submit, social, เรียบง่าย production
+update: เพิ่ม UserStatusHeader เพื่อแสดงสถานะผู้ใช้ที่มุมบนขวา
 */
 
 export default function AdminHeader() {
+  const { user, role, signOut } = useAuth()
+  
+  const userData = user ? {
+    name: user.displayName || undefined,
+    email: user.email || undefined,
+    photoURL: user.photoURL || undefined,
+    role: role || 'user'
+  } : undefined
+  
+  const handleLogout = () => {
+    signOut()
+  }
+  
+  const handleProfileClick = () => {
+    console.log('Profile clicked')
+  }
+  
+  const handleSettingsClick = () => {
+    console.log('Settings clicked')
+  }
+  
   return (
     <header className="w-full h-16 bg-gradient-to-r from-[#7376B4] to-[#544a8c] shadow flex items-center">
       <div className="w-full max-w-6xl mx-auto flex items-center gap-6 px-6">
@@ -23,7 +48,7 @@ export default function AdminHeader() {
             placeholder="Search"
           />
         </div>
-        {/* ปุ่ม submit + social */}
+        {/* ปุ่ม submit + social + User Status */}
         <div className="flex items-center gap-2">
           <button className="bg-[#5B5FC7] hover:bg-[#7177c6] text-white px-4 py-2 rounded font-medium transition text-sm">
             + Submit
@@ -32,6 +57,14 @@ export default function AdminHeader() {
           <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-[#8186c9] hover:bg-[#a7abdf] text-white transition">
             <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.56v14.91A4.56 4.56 0 0 1 19.44 24H4.56A4.56 4.56 0 0 1 0 19.47V4.53A4.56 4.56 0 0 1 4.53 0h14.91A4.56 4.56 0 0 1 24 4.56zM17.51 8.53h-2.09V7.23c0-.49.33-.6.56-.6h1.49V4.22l-2.05-.01c-2.29 0-2.81 1.71-2.81 2.81v1.51H9.12V12h1.48v6.2h2.82V12h1.81l.28-2.45z"/></svg>
           </a>
+          
+          {/* User Status */}
+          <UserStatusHeader
+            user={userData}
+            onLogout={handleLogout}
+            onProfileClick={handleProfileClick}
+            onSettingsClick={handleSettingsClick}
+          />
         </div>
       </div>
     </header>

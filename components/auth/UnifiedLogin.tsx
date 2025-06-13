@@ -1,20 +1,44 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../auth/AuthProvider'
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth'
 import { auth } from '../../firebase/firebase'
+import { useRouter } from 'next/navigation'
 
 /*
 File: /components/auth/UnifiedLogin.tsx
-Version: 1.1 | 2025-06-13
-note: Fixed Google login functionality by adding proper error handling and debugging
+Version: 2.0 | 2025-06-13
+note: Added role-based redirect after login - Super Admin users are redirected to Super Admin Dashboard
 */
 
 export default function UnifiedLogin() {
-  const { signInWithGoogle } = useAuth()
+  const { signInWithGoogle, user, role, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  
+  // Handle redirect based on user role after successful authentication
+  useEffect(() => {
+    if (user && role && !authLoading) {
+      console.log('User authenticated with role:', role)
+      
+      // Redirect based on role
+      if (role === 'super_admin') {
+        console.log('Redirecting to Super Admin Dashboard')
+        router.push('/admin/super/dashboard')
+      } else if (role === 'admin') {
+        console.log('Redirecting to Admin Dashboard')
+        router.push('/admin/dashboard')
+      } else if (role === 'vendor') {
+        console.log('Redirecting to Vendor Dashboard')
+        router.push('/vendor/dashboard')
+      } else {
+        console.log('Redirecting to Home')
+        router.push('/')
+      }
+    }
+  }, [user, role, authLoading, router])
 
   const handleGoogleLogin = async () => {
     console.log('Google login button clicked')
@@ -32,8 +56,7 @@ export default function UnifiedLogin() {
       const result = await signInWithPopup(auth, provider)
       console.log('Google login successful:', result.user)
       
-      // Redirect to home page after successful login
-      window.location.href = '/'
+      // Redirect will be handled by the useEffect hook based on role
       
     } catch (error: any) {
       console.error('Google login error:', error)
@@ -64,8 +87,7 @@ export default function UnifiedLogin() {
       const result = await signInWithPopup(auth, provider)
       console.log('Facebook login successful:', result.user)
       
-      // Redirect to home page after successful login
-      window.location.href = '/'
+      // Redirect will be handled by the useEffect hook based on role
       
     } catch (error: any) {
       console.error('Facebook login error:', error)
