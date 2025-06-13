@@ -106,6 +106,9 @@ export default function UnifiedLogin() {
     if (role !== lastRole.current) {
       addDebugInfo(`Role changed from ${lastRole.current} to ${role}`)
       lastRole.current = role
+      // Reset redirect attempts when role changes
+      redirectAttempts.current = 0
+      hasRedirected.current = false
     }
     
     // Only proceed if we have a user, role, and auth is not loading
@@ -114,7 +117,7 @@ export default function UnifiedLogin() {
       addDebugInfo(`Redirect attempt ${redirectAttempts.current} with role: ${role}`)
       
       // Prevent redirect loops by limiting attempts
-      if (redirectAttempts.current > 5) {
+      if (redirectAttempts.current > 3) {
         addDebugInfo(`Too many redirect attempts (${redirectAttempts.current}), stopping`)
         return
       }
@@ -151,13 +154,15 @@ export default function UnifiedLogin() {
           addDebugInfo('Redirecting to Home')
           window.location.href = '/'
         }
-      }, 500)
+      }, 1000) // Increased delay for better stability
     } else if (user && !role && !authLoading) {
       // If we have a user but no role, and we're not loading, try to check role manually
-      addDebugInfo('User logged in but no role found, will check manually in 2 seconds...')
+      addDebugInfo('User logged in but no role found, will check manually in 3 seconds...')
       setTimeout(() => {
-        checkUserRole()
-      }, 2000)
+        if (!role) { // Double check role is still missing
+          checkUserRole()
+        }
+      }, 3000)
     }
   }, [user, role, authLoading, router])
 

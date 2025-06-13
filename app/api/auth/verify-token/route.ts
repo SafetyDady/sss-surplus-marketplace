@@ -37,17 +37,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if user exists in adminWhitelist
-    console.log(`API: Checking if user ${email} exists in adminWhitelist...`)
+    // Check if user is Super Admin from environment variables first
+    console.log(`API: Checking if user ${email} is Super Admin from ENV...`)
     
-    try {
-      const adminWhitelistRef = admin.firestore().collection('adminWhitelist')
-      const whitelistQuery = await adminWhitelistRef.where('email', '==', email).get()
-      
-      console.log(`API: adminWhitelist query completed, found: ${!whitelistQuery.empty}`)
+    const superAdminEmails = process.env.SUPER_ADMIN_EMAILS?.split(',').map(e => e.trim()) || []
+    const isSuperAdmin = superAdminEmails.includes(email)
+    
+    console.log(`API: Super Admin emails from ENV: ${superAdminEmails.join(', ')}`)
+    console.log(`API: Is ${email} a Super Admin: ${isSuperAdmin}`)
 
-      let role = 'user' // Default role
-      let permissions: string[] = []
+    let role = 'user' // Default role
+    let permissions: string[] = []
+
+    if (isSuperAdmin) {
+      // User is Super Admin from environment variables
+      role = 'super_admin'
+      permissions = ['all']
+      console.log(`API: User ${email} assigned Super Admin role from ENV`)
+    } else {
+      // Check if user exists in adminWhitelist
+      console.log(`API: Checking if user ${email} exists in adminWhitelist...`)
+      
+      try {
+        const adminWhitelistRef = admin.firestore().collection('adminWhitelist')
+        const whitelistQuery = await adminWhitelistRef.where('email', '==', email).get()
+        
+        console.log(`API: adminWhitelist query completed, found: ${!whitelistQuery.empty}`)
 
       if (!whitelistQuery.empty) {
         // User is in adminWhitelist
@@ -91,15 +106,17 @@ export async function POST(request: NextRequest) {
       } else {
         console.log(`API: User not found in adminWhitelist, using default role: ${role}`)
       }
-
-      // For testing/debugging - force super_admin role for specific email
-      if (email === 'sanchai5651@gmail.com') {
-        role = 'super_admin'
-        permissions = ['all']
-        console.log('API: Forcing super_admin role for test user')
+      } catch (firestoreError) {
+        console.error('API Error: Firestore operation failed:', firestoreError)
+        return NextResponse.json(
+          { error: 'Database operation failed', details: firestoreError.message },
+          { status: 500 }
+        )
       }
+    }
 
-      console.log(`API: Getting user record for UID: ${uid}`)
+    console.log(`API: Final role assignment - Role: ${role}, Permissions: ${permissions.join(', ')}`)
+    console.log(`API: Getting user record for UID: ${uid}`)
       
       // Get current custom claims
       const userRecord = await admin.auth().getUser(uid)
