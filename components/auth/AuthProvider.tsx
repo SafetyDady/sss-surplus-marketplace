@@ -38,23 +38,37 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [permissions, setPermissions] = useState<string[] | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Extract custom claims from user's ID token
-  const extractCustomClaims = async (user: User) => {
+  // Extract custom claims from user's ID token with retry mechanism
+  const extractCustomClaims = async (user: User, retryCount = 0, maxRetries = 3) => {
     try {
+      // Force token refresh to ensure we get the latest claims
+      await user.getIdToken(true)
+      
       const idTokenResult = await user.getIdTokenResult()
       const customClaims = idTokenResult.claims
-      
-      setRole(customClaims.role || 'user')
-      setPermissions(customClaims.permissions || [])
       
       console.log('Custom claims extracted:', {
         role: customClaims.role,
         permissions: customClaims.permissions
       })
+      
+      // If role is missing but we haven't exceeded max retries, try again
+      if (!customClaims.role && retryCount < maxRetries) {
+        console.log(`Role not found in claims, retrying... (${retryCount + 1}/${maxRetries})`)
+        // Wait a bit before retrying to allow Firebase to propagate claims
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        return extractCustomClaims(user, retryCount + 1, maxRetries)
+      }
+      
+      setRole(customClaims.role || 'user')
+      setPermissions(customClaims.permissions || [])
+      
+      return { role: customClaims.role, permissions: customClaims.permissions }
     } catch (error) {
       console.error('Error extracting custom claims:', error)
       setRole('user')
       setPermissions([])
+      return { role: 'user', permissions: [] }
     }
   }
 
@@ -72,6 +86,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         try {
           // Send ID token to backend for role assignment
           const idToken = await fbUser.getIdToken()
+          console.log('Sending ID token to backend for verification...')
+          
           const response = await fetch('/api/auth/verify-token', {
             method: 'POST',
             headers: {
@@ -82,12 +98,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           
           if (response.ok) {
             console.log('Token verified with backend successfully')
-            // Force token refresh to get updated custom claims
-            await fbUser.getIdToken(true)
-            // Extract custom claims
-            await extractCustomClaims(fbUser)
+            const responseData = await response.json()
+            console.log('Backend response:', responseData)
+            
+            // Wait a moment to allow Firebase to update the token
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            
+            // Extract custom claims with retry mechanism
+            const claimsResult = await extractCustomClaims(fbUser)
+            console.log('Final claims result:', claimsResult)
           } else {
             console.error('Failed to verify token with backend')
+            const errorData = await response.json()
+            console.error('Backend error:', errorData)
           }
         } catch (error) {
           console.error('Error verifying token with backend:', error)

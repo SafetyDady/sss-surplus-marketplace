@@ -26,16 +26,16 @@ export default function UnifiedLogin() {
       // Redirect based on role
       if (role === 'super_admin') {
         console.log('Redirecting to Super Admin Dashboard')
-        router.push('/admin/super/dashboard')
+        router.replace('/admin/super/dashboard')
       } else if (role === 'admin') {
         console.log('Redirecting to Admin Dashboard')
-        router.push('/admin/dashboard')
+        router.replace('/admin/dashboard')
       } else if (role === 'vendor') {
         console.log('Redirecting to Vendor Dashboard')
-        router.push('/vendor/dashboard')
+        router.replace('/vendor/dashboard')
       } else {
         console.log('Redirecting to Home')
-        router.push('/')
+        router.replace('/')
       }
     }
   }, [user, role, authLoading, router])
