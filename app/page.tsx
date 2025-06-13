@@ -969,16 +969,8 @@ export default function Home() {
               <a href="/about">เกี่ยวกับเรา</a>
               <a href="/contact">ติดต่อเรา</a>
               
-              {/* Login Dropdown */}
-              <div className="login-dropdown">
-                <button className="login-btn">เข้าสู่ระบบ</button>
-                <div className="login-dropdown-menu">
-                  <a href="/auth/signin">สำหรับลูกค้า</a>
-                  <a href="/vendor/login">สำหรับ Vendor</a>
-                  <a href="/admin/login">สำหรับ Admin</a>
-                  <a href="/admin/super" id="superAdminLink" style={{display: 'none'}}>🔥 Super Admin</a>
-                </div>
-              </div>
+              {/* Unified Login Button */}
+              <a href="/login" className="login-btn">เข้าสู่ระบบ</a>
             </div>
           </nav>
 
@@ -999,6 +991,7 @@ export default function Home() {
             <a href="#categories">หมวดหมู่</a>
             <a href="/about">เกี่ยวกับเรา</a>
             <a href="/contact">ติดต่อเรา</a>
+            <a href="/login">เข้าสู่ระบบ</a>
           </div>
         </div>
       </header>

@@ -2,22 +2,22 @@
 
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { auth } from '../../firebase/firebase'
-import { User, onAuthStateChanged } from 'firebase/auth'
-import { signInWithEmail, signUpWithEmail, signOutUser } from '../../services/authService'
-import { createUserProfile, getUserProfileByUid, UserProfile } from '../../services/userService'
+import { User, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
+import { getUserProfileByUid, UserProfile } from '../../services/userService'
 
 /*
 File: /components/auth/AuthProvider.tsx
-Version: 1.2 | 2025-06-02
-note: Sync ข้อมูล User Profile จาก Firestore ทุกครั้งที่ Login/SignUp | พร้อมเก็บ role/properties ใน context
+Version: 2.0 | 2025-06-13
+note: Updated to use Firebase Authentication with social login and custom claims for role management
 */
 
 type AuthContextType = {
   user: User | null
   loading: boolean
   profile: UserProfile | null
-  signIn: (email: string, password: string) => Promise<User | null>
-  signUp: (email: string, password: string) => Promise<User | null>
+  role: string | null
+  permissions: string[] | null
+  signInWithGoogle: () => Promise<User | null>
   signOut: () => Promise<void>
 }
 
@@ -25,8 +25,9 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: false,
   profile: null,
-  signIn: async () => null,
-  signUp: async () => null,
+  role: null,
+  permissions: null,
+  signInWithGoogle: async () => null,
   signOut: async () => {},
 })
 
@@ -37,76 +38,131 @@ export function useAuth() {
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [role, setRole] = useState<string | null>(null)
+  const [permissions, setPermissions] = useState<string[] | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Sync User Profile ทุกครั้งที่ user เปลี่ยน
+  // Extract custom claims from user's ID token
+  const extractCustomClaims = async (user: User) => {
+    try {
+      const idTokenResult = await user.getIdTokenResult()
+      const customClaims = idTokenResult.claims
+      
+      setRole(customClaims.role || 'user')
+      setPermissions(customClaims.permissions || [])
+      
+      console.log('Custom claims extracted:', {
+        role: customClaims.role,
+        permissions: customClaims.permissions
+      })
+    } catch (error) {
+      console.error('Error extracting custom claims:', error)
+      setRole('user')
+      setPermissions([])
+    }
+  }
+
+  // Sync User Profile and custom claims when user changes
   useEffect(() => {
     if (!user) {
       setProfile(null)
+      setRole(null)
+      setPermissions(null)
       setLoading(false)
       return
     }
+
     setLoading(true)
-    getUserProfileByUid(user.uid)
-      .then(profile => setProfile(profile))
-      .finally(() => setLoading(false))
+    
+    // Extract custom claims and get user profile in parallel
+    Promise.all([
+      extractCustomClaims(user),
+      getUserProfileByUid(user.uid)
+    ])
+    .then(([_, profile]) => {
+      setProfile(profile)
+    })
+    .catch(error => {
+      console.error('Error loading user data:', error)
+    })
+    .finally(() => {
+      setLoading(false)
+    })
   }, [user])
 
-  // ตรวจสอบสถานะ Auth ทุกครั้ง (on mount)
+  // Monitor auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setUser(fbUser)
+      
+      if (fbUser) {
+        // Send ID token to backend for role assignment
+        try {
+          const idToken = await fbUser.getIdToken()
+          const response = await fetch('/api/auth/verify-token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ idToken }),
+          })
+          
+          if (response.ok) {
+            // Force token refresh to get updated custom claims
+            await fbUser.getIdToken(true)
+          }
+        } catch (error) {
+          console.error('Error verifying token with backend:', error)
+        }
+      }
     })
+    
     return () => unsubscribe()
   }, [])
 
-  const signIn = async (email: string, password: string) => {
+  const signInWithGoogle = async () => {
     setLoading(true)
     try {
-      const user = await signInWithEmail(email, password)
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      const user = result.user
       setUser(user)
       return user
+    } catch (error) {
+      console.error('Error signing in with Google:', error)
+      return null
     } finally {
       setLoading(false)
     }
   }
 
-  const signUp = async (email: string, password: string) => {
+  const signOutUser = async () => {
     setLoading(true)
     try {
-      const user = await signUpWithEmail(email, password)
-      setUser(user)
-      // สร้าง Firestore user profile พร้อม role=user
-      if (user) {
-        await createUserProfile({
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
-          photoURL: user.photoURL || '',
-          role: 'user',
-          createdAt: new Date(),
-        })
-      }
-      return user
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const signOut = async () => {
-    setLoading(true)
-    try {
-      await signOutUser()
+      await signOut(auth)
       setUser(null)
       setProfile(null)
+      setRole(null)
+      setPermissions(null)
+    } catch (error) {
+      console.error('Error signing out:', error)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, profile, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      profile, 
+      role, 
+      permissions, 
+      signInWithGoogle, 
+      signOut: signOutUser 
+    }}>
       {children}
     </AuthContext.Provider>
   )
 }
+
