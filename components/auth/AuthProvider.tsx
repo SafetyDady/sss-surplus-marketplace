@@ -3,18 +3,16 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { auth } from '../../firebase/firebase'
 import { User, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
-import { getUserProfileByUid, UserProfile } from '../../services/userService'
 
 /*
 File: /components/auth/AuthProvider.tsx
-Version: 2.0 | 2025-06-13
-note: Updated to use Firebase Authentication with social login and custom claims for role management
+Version: 2.1 | 2025-06-13
+note: Simplified AuthProvider with better error handling and removed dependency on userService
 */
 
 type AuthContextType = {
   user: User | null
   loading: boolean
-  profile: UserProfile | null
   role: string | null
   permissions: string[] | null
   signInWithGoogle: () => Promise<User | null>
@@ -24,7 +22,6 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: false,
-  profile: null,
   role: null,
   permissions: null,
   signInWithGoogle: async () => null,
@@ -37,7 +34,6 @@ export function useAuth() {
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [role, setRole] = useState<string | null>(null)
   const [permissions, setPermissions] = useState<string[] | null>(null)
   const [loading, setLoading] = useState(true)
@@ -62,42 +58,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Sync User Profile and custom claims when user changes
-  useEffect(() => {
-    if (!user) {
-      setProfile(null)
-      setRole(null)
-      setPermissions(null)
-      setLoading(false)
-      return
-    }
-
-    setLoading(true)
-    
-    // Extract custom claims and get user profile in parallel
-    Promise.all([
-      extractCustomClaims(user),
-      getUserProfileByUid(user.uid)
-    ])
-    .then(([_, profile]) => {
-      setProfile(profile)
-    })
-    .catch(error => {
-      console.error('Error loading user data:', error)
-    })
-    .finally(() => {
-      setLoading(false)
-    })
-  }, [user])
-
   // Monitor auth state changes
   useEffect(() => {
+    console.log('Setting up auth state listener...')
+    
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      console.log('Auth state changed:', fbUser ? 'User logged in' : 'User logged out')
       setUser(fbUser)
       
       if (fbUser) {
-        // Send ID token to backend for role assignment
+        setLoading(true)
+        
         try {
+          // Send ID token to backend for role assignment
           const idToken = await fbUser.getIdToken()
           const response = await fetch('/api/auth/verify-token', {
             method: 'POST',
@@ -108,24 +81,43 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           })
           
           if (response.ok) {
+            console.log('Token verified with backend successfully')
             // Force token refresh to get updated custom claims
             await fbUser.getIdToken(true)
+            // Extract custom claims
+            await extractCustomClaims(fbUser)
+          } else {
+            console.error('Failed to verify token with backend')
           }
         } catch (error) {
           console.error('Error verifying token with backend:', error)
         }
+        
+        setLoading(false)
+      } else {
+        setRole(null)
+        setPermissions(null)
+        setLoading(false)
       }
     })
     
-    return () => unsubscribe()
+    return () => {
+      console.log('Cleaning up auth state listener')
+      unsubscribe()
+    }
   }, [])
 
   const signInWithGoogle = async () => {
+    console.log('signInWithGoogle called from AuthProvider')
     setLoading(true)
     try {
       const provider = new GoogleAuthProvider()
+      provider.addScope('email')
+      provider.addScope('profile')
+      
       const result = await signInWithPopup(auth, provider)
       const user = result.user
+      console.log('Google sign in successful:', user.email)
       setUser(user)
       return user
     } catch (error) {
@@ -141,9 +133,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signOut(auth)
       setUser(null)
-      setProfile(null)
       setRole(null)
       setPermissions(null)
+      console.log('User signed out successfully')
     } catch (error) {
       console.error('Error signing out:', error)
     } finally {
@@ -155,7 +147,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider value={{ 
       user, 
       loading, 
-      profile, 
       role, 
       permissions, 
       signInWithGoogle, 

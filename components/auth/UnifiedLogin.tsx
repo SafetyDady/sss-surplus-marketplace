@@ -7,8 +7,8 @@ import { auth } from '../../firebase/firebase'
 
 /*
 File: /components/auth/UnifiedLogin.tsx
-Version: 1.0 | 2025-06-13
-note: Unified login component with social providers for all user types
+Version: 1.1 | 2025-06-13
+note: Fixed Google login functionality by adding proper error handling and debugging
 */
 
 export default function UnifiedLogin() {
@@ -17,34 +17,70 @@ export default function UnifiedLogin() {
   const [error, setError] = useState<string | null>(null)
 
   const handleGoogleLogin = async () => {
+    console.log('Google login button clicked')
     setLoading(true)
     setError(null)
+    
     try {
-      await signInWithGoogle()
-    } catch (error) {
+      console.log('Attempting Google login...')
+      
+      // Direct Firebase Auth approach as fallback
+      const provider = new GoogleAuthProvider()
+      provider.addScope('email')
+      provider.addScope('profile')
+      
+      const result = await signInWithPopup(auth, provider)
+      console.log('Google login successful:', result.user)
+      
+      // Redirect to home page after successful login
+      window.location.href = '/'
+      
+    } catch (error: any) {
       console.error('Google login error:', error)
-      setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google')
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError('การเข้าสู่ระบบถูกยกเลิก')
+      } else if (error.code === 'auth/popup-blocked') {
+        setError('Popup ถูกบล็อก กรุณาอนุญาต Popup สำหรับเว็บไซต์นี้')
+      } else if (error.code === 'auth/network-request-failed') {
+        setError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต')
+      } else {
+        setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google: ' + (error.message || 'ไม่ทราบสาเหตุ'))
+      }
     } finally {
       setLoading(false)
     }
   }
 
   const handleFacebookLogin = async () => {
+    console.log('Facebook login button clicked')
     setLoading(true)
     setError(null)
+    
     try {
       const provider = new FacebookAuthProvider()
-      await signInWithPopup(auth, provider)
-    } catch (error) {
+      provider.addScope('email')
+      
+      const result = await signInWithPopup(auth, provider)
+      console.log('Facebook login successful:', result.user)
+      
+      // Redirect to home page after successful login
+      window.location.href = '/'
+      
+    } catch (error: any) {
       console.error('Facebook login error:', error)
-      setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Facebook')
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError('การเข้าสู่ระบบถูกยกเลิก')
+      } else if (error.code === 'auth/popup-blocked') {
+        setError('Popup ถูกบล็อก กรุณาอนุญาต Popup สำหรับเว็บไซต์นี้')
+      } else {
+        setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Facebook: ' + (error.message || 'ไม่ทราบสาเหตุ'))
+      }
     } finally {
       setLoading(false)
     }
   }
-
-  // Note: Line login would require additional setup and potentially a custom provider
-  // For now, we'll focus on Google and Facebook as they are more straightforward to implement
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
@@ -64,7 +100,7 @@ export default function UnifiedLogin() {
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -79,7 +115,7 @@ export default function UnifiedLogin() {
         <button
           onClick={handleFacebookLogin}
           disabled={loading}
-          className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
