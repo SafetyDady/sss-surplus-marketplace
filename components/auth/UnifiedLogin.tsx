@@ -30,6 +30,65 @@ export default function UnifiedLogin() {
     setDebugInfo(prev => `${prev}\n${new Date().toISOString()}: ${info}`)
   }
   
+  // Manual role check function for debugging
+  const checkUserRole = async () => {
+    if (!user) {
+      addDebugInfo('No user found for role check')
+      return
+    }
+    
+    try {
+      addDebugInfo('Manually checking user role...')
+      
+      // Force token refresh
+      await user.getIdToken(true)
+      
+      // Get token result with claims
+      const idTokenResult = await user.getIdTokenResult()
+      addDebugInfo(`Token claims: ${JSON.stringify(idTokenResult.claims)}`)
+      
+      // Check if role exists in claims
+      if (idTokenResult.claims.role) {
+        addDebugInfo(`Found role in claims: ${idTokenResult.claims.role}`)
+      } else {
+        addDebugInfo('No role found in claims, trying API call...')
+        
+        // Try API call to verify token
+        try {
+          const idToken = await user.getIdToken()
+          addDebugInfo('Calling /api/auth/verify-token API...')
+          
+          const response = await fetch('/api/auth/verify-token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ idToken }),
+          })
+          
+          if (response.ok) {
+            const data = await response.json()
+            addDebugInfo(`API response: ${JSON.stringify(data)}`)
+            
+            // Wait for token to update
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            
+            // Check token again
+            const newTokenResult = await user.getIdTokenResult(true)
+            addDebugInfo(`New token claims: ${JSON.stringify(newTokenResult.claims)}`)
+          } else {
+            const errorData = await response.json()
+            addDebugInfo(`API error: ${JSON.stringify(errorData)}`)
+          }
+        } catch (apiError) {
+          addDebugInfo(`API call error: ${apiError.message}`)
+        }
+      }
+    } catch (error) {
+      addDebugInfo(`Role check error: ${error.message}`)
+    }
+  }
+
   // Handle redirect based on user role after successful authentication
   useEffect(() => {
     // Reset redirect flag when user changes
@@ -39,6 +98,9 @@ export default function UnifiedLogin() {
       lastRole.current = null
       return
     }
+    
+    // Add debug info about user state
+    addDebugInfo(`User state: ${user.email}, Loading: ${authLoading}, Role: ${role || 'undefined'}`)
     
     // Track role changes
     if (role !== lastRole.current) {
@@ -90,6 +152,12 @@ export default function UnifiedLogin() {
           window.location.href = '/'
         }
       }, 500)
+    } else if (user && !role && !authLoading) {
+      // If we have a user but no role, and we're not loading, try to check role manually
+      addDebugInfo('User logged in but no role found, will check manually in 2 seconds...')
+      setTimeout(() => {
+        checkUserRole()
+      }, 2000)
     }
   }, [user, role, authLoading, router])
 
