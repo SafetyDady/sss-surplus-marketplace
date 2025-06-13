@@ -4,14 +4,12 @@ import { getUserRole, updateUserClaims, updateUserProfile, activateAdminUser } f
 
 /*
 File: /app/api/auth/verify-token/route.ts
-Version: 3.1 | 2025-06-13
-note: Optimized API endpoint using centralized role management - Phase 2 of Incremental Refactoring
+Version: 4.0 | 2025-06-13
+note: Database-first authentication API - Phase 3 of Incremental Refactoring
 Changes:
-- Integrated roleManager utility functions
-- Reduced code duplication
-- Improved maintainability
-- Simplified error handling
-- Better separation of concerns
+- Completely removed dependency on SUPER_ADMIN_EMAILS environment variable
+- Now uses database-only approach for admin management
+- Simplified and more maintainable
 */
 
 export async function POST(request: NextRequest) {
@@ -40,7 +38,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get user role using centralized function
+    // Get user role using database-only approach
     let userRole
     try {
       userRole = await getUserRole(email)
@@ -72,7 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Activate admin user if pending (background operation)
-    if (role !== 'user' && role !== 'super_admin') {
+    if (role !== 'user') {
       activateAdminUser(email).catch(error => 
         console.error('🔗 [API] Background admin activation failed:', error)
       )
