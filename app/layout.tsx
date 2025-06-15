@@ -16,7 +16,7 @@ export const metadata = {
   description: 'Marketplace ระบบ Surplus/สินค้าคงเหลือ | Next.js 14+',
 }
 
-import { AuthProvider } from '../components/AuthProvider';
+import AuthProvider from '../components/auth/AuthProvider';
 
 export default function RootLayout({
   children,
