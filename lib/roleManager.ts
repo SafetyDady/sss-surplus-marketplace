@@ -19,7 +19,7 @@ export interface UserRole {
 export interface AdminWhitelistEntry {
   email: string
   role: string
-  status: 'pending' | 'activated' | 'disabled'
+  active?: boolean  // Changed from status to active
   name?: string
   createdAt?: any
   activatedAt?: any
@@ -34,33 +34,43 @@ export interface AdminWhitelistEntry {
  */
 export async function getUserRole(email: string): Promise<UserRole> {
   try {
+    console.log(`🔍 [RoleManager] Checking role for: ${email}`)
+    
     // Check adminWhitelist in Firestore
     const adminWhitelistRef = admin.firestore().collection('adminWhitelist')
     const whitelistQuery = await adminWhitelistRef.where('email', '==', email).limit(1).get()
     
     if (!whitelistQuery.empty) {
       const whitelistData = whitelistQuery.docs[0].data() as AdminWhitelistEntry
+      console.log(`🔍 [RoleManager] Found whitelist data:`, whitelistData)
       
-      if (whitelistData.status === 'disabled') {
+      // Check if account is active (using 'active' field instead of 'status')
+      if (whitelistData.active === false) {
+        console.log(`🔍 [RoleManager] Account disabled for: ${email}`)
         throw new Error('Account has been disabled')
       }
       
-      if (whitelistData.status === 'pending' || whitelistData.status === 'activated') {
+      // If active is true or undefined (default to active)
+      if (whitelistData.active !== false) {
         const role = whitelistData.role || 'admin'
+        console.log(`🔍 [RoleManager] Returning role: ${role} for ${email}`)
         return {
           role,
           permissions: getRolePermissions(role)
         }
       }
+    } else {
+      console.log(`🔍 [RoleManager] No whitelist entry found for: ${email}`)
     }
   } catch (error) {
-    console.error('Error checking adminWhitelist:', error)
+    console.error('🔍 [RoleManager] Error checking adminWhitelist:', error)
     if (error.message === 'Account has been disabled') {
       throw error
     }
     // Continue with default role if database error
   }
 
+  console.log(`🔍 [RoleManager] Returning default role 'user' for: ${email}`)
   // Default role
   return {
     role: 'user',
