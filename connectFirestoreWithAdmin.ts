@@ -43,4 +43,19 @@ if (!admin.apps.length) {
 }
 
 export const db = admin.firestore()
-export const bucket = admin.storage().bucket()
+
+// Only export bucket if storage is properly configured
+let bucket;
+try {
+  bucket = admin.storage().bucket()
+} catch (error) {
+  console.log('Storage bucket not configured, skipping...')
+  bucket = null
+}
+
+export { bucket }
+
+// Export function for API routes
+export async function connectFirestoreWithAdmin() {
+  return db
+}
